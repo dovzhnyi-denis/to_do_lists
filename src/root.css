@@ -1,0 +1,5 @@
+html {
+    font-size: 10px;
+    --main-bg-color: #bac4dd;
+    background-color: var(--main-bg-color);
+}
