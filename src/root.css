@@ -1,5 +1,36 @@
 html {
-    font-size: 10px;
-    --main-bg-color: #bac4dd;
-    background-color: var(--main-bg-color);
+/*    --main-bg-color: #bac4dd;
+    background-color: var(--main-bg-color);*/
+}
+
+.bg-main-gradient {
+  height: 100vh;
+  background-image: linear-gradient(#d6d0c3, #ad580d);
+}
+
+.project-bar-bg {
+  background-image: linear-gradient(#8cafd2, #33588f);
+  border: solid 1px #315589;
+}
+
+.font-lg {
+  font-size: 1.5rem;
+}
+
+#signout-tip {
+  position: fixed;
+  right: 3.4rem;
+  font-size: 1rem;
+  top: 1.4rem;
+  padding: 0 2px;
+  color: white;
+  visibility: hidden;
+  background-color: #6c757d;
+  border-radius: 6px;
+  border-color: #6c757d;
+}
+
+#signout:hover #signout-tip {
+  opacity: 1;
+  visibility: visible;
 }

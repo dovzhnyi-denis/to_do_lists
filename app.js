@@ -1,32 +1,51 @@
-const { config } = require('./config');
-const express = require('express');
-const bodyParser = require('body-parser');
-const errors = require('./midware/errors');
-const Sentry = require('@sentry/node');
-const path = require('path');
+const { config } = require("./config"),
+  express = require("express"),
+  bodyParser = require("body-parser"),
+  errors = require("./middleware/errors"),
+  Sentry = require("@sentry/node"),
+  mysql = require("mysql"),
+  session = require("express-session"),
+  { db } = require("./db"),
+  mySQLStore = require("express-mysql-session")(session);
+
 const app = express();
 
+const options = {
+  host: "bsisi1zyljeinyiuwh3y-mysql.services.clever-cloud.com",
+  port: 3306,
+  user: "uo98b4nxwmrwrsgj",
+  password: "D5yjwLdtKaOlWMyPAVyq",
+  database: "bsisi1zyljeinyiuwh3y"
+};
+
+const sessionStore = new mySQLStore(options);
+
 // init and use sentry error tracking
-Sentry.init({dsn: 'https://3177ea0d38994477a7b76f72d7c44d4b@o396108.ingest.sentry.io/5260616'});
+Sentry.init({dsn: "https://3177ea0d38994477a7b76f72d7c44d4b@o396108.ingest.sentry.io/5260616"});
 
 app.use(Sentry.Handlers.requestHandler());
 
+app.use(session({
+  key: "session_cookie",
+  secret: "very_secret",
+  store: sessionStore,
+  resave: true,
+  saveUninitialized: false
+}));
+
+// initialize database
+db.init();
+
 // serve static assets
-app.use('/static', express.static('public'));
-// setup view engine
-//app.set('view engine', 'ejs');
+app.use("/static", express.static("public"));
 // parse incoming requestst
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 // routes
-const mainRoutes = require('./routes'); 
+const routes = require("./routes"); 
 
-app.use(mainRoutes);
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/index.html'));
-});
+app.use(routes);
 
 // error handling
 app.use(Sentry.Handlers.errorHandler());

@@ -141,5 +141,27 @@ exports.db = {
       console.log(err);
       srvRes.status(500).json({error: "internal server error"});
     }
+  },
+
+  signedIn(userId, srvRes){
+    try {
+      if (!userId) throw new Error("unauthorized");
+      console.log(userId);
+      pool.query("SELECT id FROM users", (err, res) => {
+        if (err) throw err;
+
+        const matchedId = res.find(q => q.id === userId);
+        
+        if (matchedId) {
+          srvRes.status(200).json({});
+        } else {
+          srvRes.status(401).json({});
+        }
+      });
+    } catch(err) {
+      if (err.message === "unauthorized") {
+        srvRes.status(401).json({message: err.message});
+      } else srvRes.status(500).json({message: "server error"});
+    }
   }
 };

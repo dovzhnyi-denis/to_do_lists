@@ -1,9 +1,21 @@
+import SignForm from "./components/signForm";
+import Profile from "./components/profile";
+import "./lib/fontawesome-all.min";
 import "./root.css";
 
-$().ready( () => {
-  let q = `<p id="d1"></p>`;
-  let w = `<p class="testing testing1">testing</p>`;
-  $("#root").append(w, q);
-  $("#d1").text(add(1, 2));
-  $(".testing1").removeClass("testing1", "testing");
+$().ready(() => {
+  const $container = $("#root");
+  const signForm = new SignForm($container);
+  const profile = new Profile($container);
+  $container.addClass=("container-fluid");
+
+  router();
+
+  async function router(){
+    const prof = await fetch("/profile");
+    if (prof.status === 200) profile.mount(router);
+    else signForm.mount(router);
+  }
 });
+
+

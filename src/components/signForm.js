@@ -1,15 +1,13 @@
 export default class SignForm {
   constructor($mountContainer = $("body")){
     this.$container = $mountContainer;
-//    this.mount($mountContainer);
   }
 
-  mount(mountNext) {
-//    if (!mountNext) throw new Error("SignForm.mount() mountNext is undefined!");
-    if (mountNext) this.mountNext = mountNext;
+  mount(router) {
+    if (router) this.router = router;
 
     this.$container.append(`
-      <div id="formContainer" class="card mb bg-main-gradient">
+      <div id="formContainer" class="card bg-main-gradient">
         <form class="w-50 mx-auto" style="margin-top: 30vh;">
           <div class="row">
             <div class="col text-center">
@@ -129,7 +127,7 @@ export default class SignForm {
     const $userName = $("#userName");
     const $pass = $("#pass");
     const $err = $("#error");
-
+    // validate user input
     if ($userName.val().length === 0 || $pass.val().length === 0) {
       $err.prop("hidden", false).text("All fields required.");
     } else if ($userName.val().length > 20 || $pass.val().length > 20) {
@@ -141,19 +139,18 @@ export default class SignForm {
         pass: $pass.val()
       };
       const options = {
-//        credentials: "include",
         method: "post",
         body: JSON.stringify(userData),
         headers: {
           "Content-Type": "application/json"
         }
       };
-      
+
       const res = await fetch("/signin", options);
       const body = await res.json();
       
       if (res.status === 200) {
-        return this.unmount(body.message);
+        return this.unmount();
       } else {
         $err.prop("hidden", false)
           .text(body.message);
@@ -161,12 +158,12 @@ export default class SignForm {
     }
   }
 
-  unmount(msg) {
+  unmount() {
     $("#toggleBtn").unbind("click", this.toggleForm);
     $("#signinBtn").unbind("click", this.signIn);
     $("#signupBtn").unbind("click", this.signUp);
 
     this.$container.text("");
-    if (this.mountNext) this.mountNext(this, msg);
+    if (this.router) this.router();
   }
 }
