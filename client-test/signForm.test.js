@@ -111,32 +111,5 @@ export default function signFormTest() {
       $pass.val(`${name}${name}1`);
       testIFields(0);
     });
-    
-    it("it should be possible to register a new user", () => {
-      $uName.val(name);
-      $pass.val(pass);
-      $cPass.val(pass);
-      $signup.trigger("click");
-
-      setTimeout(() => { 
-        expect($("#profileContainer").html()).to.be.true;
-        // implicit test of sign out
-        profile.signout();
-      }, 2000);
-
-
-    });
-
-    it("it should be possible to sign in with existing account", () => {
-      $uName.val(name);
-      $pass.val(pass);
-      $signin.trigger("click");
-
-      setTimeout(() => { 
-        expect($("#profileContainer").html()).to.be.true;
-        // implicit test of sign out
-        profile.signout();
-      }, 2000);
-    });
   });
 }

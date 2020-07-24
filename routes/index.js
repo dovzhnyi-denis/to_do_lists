@@ -24,7 +24,6 @@ router.get("/profile", (req, res) => {
 
 router.get("/signout", (req, res) => {
   req.session.userId = undefined;
-  console.log("signout");
   res.status(200).json({});
 })
 

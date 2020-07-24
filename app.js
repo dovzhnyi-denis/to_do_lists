@@ -38,7 +38,7 @@ db.init();
 
 // serve static assets
 app.use("/static", express.static("public"));
-// parse incoming requestst
+// parse bodies of incoming requestst
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
