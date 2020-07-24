@@ -6,8 +6,8 @@ export default class Profile {
   mount(router) {
     if (router) this.router = router;
 
-    this.$container.append(`
-      <div id="profile" class="card bg-main-gradient">
+    this.$container.html(`
+      <div id="profileContainer" class="card bg-main-gradient">
         <div id="signout" class="position-fixed" style="top:1rem;right:1rem;">
           <button id="signoutBtn" class="btn btn-dark px-2 py-1" type="button">
             <i class="fas fa-sign-out-alt"></i>
@@ -20,10 +20,10 @@ export default class Profile {
               <i class="fas fa-clipboard-list" style="font-size:2rem;"></i>
             </div>
             <div class="col-md-8 d-flex justify-content-start">
-              <p class="text-white my-auto">Project name</p> 
+              <input id="projectName" class="text-white my-auto" type="text" readonly value="Project Name" style="background-color:transparent;border-color:transparent">
             </div>
-            <div class="col-md-1">
-              <i class="fas fa-pen m-auto text-center"></i>
+            <div id="edProjName" class="col-md-1">
+              <i  class="fas fa-pen m-auto text-center" style="cursor:pointer"></i>
             </div>
             <div class="col-md-1">
               <i class="far fa-trash-alt m-auto text-center"></i>
@@ -35,7 +35,9 @@ export default class Profile {
     $("#signoutBtn").on("click", () => {
     this.signout();
     });
-  }
+    
+    $("#edProjName").on("click", () => this.editProjectName());
+   }
 
   async signout() {
     const res = await fetch("/signout");
@@ -43,10 +45,16 @@ export default class Profile {
     else this.$container.text("error");
   }
 
-  unmount() {
-    $("#signoutBtn").unbind("click", this.signout);
+  editProjectName() {
+    const $projName = $("#projectName");
+    $projName.prop("readonly", (i, val) => !val).focus();
+  }
 
-    this.$container.text("");
+  unmount() {
+    $("#signoutBtn").off("click");
+    $("#edProjName").off("click");
+
+    this.$container.html("");
     if (this.router) this.router();
   }
 }

@@ -6,7 +6,7 @@ export default class SignForm {
   mount(router) {
     if (router) this.router = router;
 
-    this.$container.append(`
+    this.$container.html(`
       <div id="formContainer" class="card bg-main-gradient">
         <form class="w-50 mx-auto" style="margin-top: 30vh;">
           <div class="row">
@@ -44,23 +44,17 @@ export default class SignForm {
       </div>
      `);
 
-    $("#toggleBtn").on("click", () => {
-    this.toggleForm();
-    });
+    $("#toggleBtn").on("click", this.toggleForm);
  
-    $("#signupBtn").on("click", () => {
-    this.signUp();
-    });
+    $("#signupBtn").on("click", () => this.signUp());
 
-    $("#signinBtn").on("click", () => {
-    this.signIn();
-    });
+    $("#signinBtn").on("click", () => this.signIn());
   }
 
   toggleForm() {
     const $toggleBtn = $("#toggleBtn");
-    const $signinBtn= $("#signinBtn");
-    const $signupBtn= $("#signupBtn");
+    const $signinBtn = $("#signinBtn");
+    const $signupBtn = $("#signupBtn");
     const $confPass = $("#confirmPass");
     const signup = "Sign Up";
     const signin = "Sign In";
@@ -83,7 +77,7 @@ export default class SignForm {
   async signUp() {
     const $userName = $("#userName");
     const $pass = $("#pass");
-    const $passCheck = $("#passCheck");
+    const $passCheck = $("#confirmPass");
     const $err = $("#error");
 
     if ($userName.val().length === 0 || $pass.val().length === 0 ||
@@ -127,7 +121,7 @@ export default class SignForm {
     const $userName = $("#userName");
     const $pass = $("#pass");
     const $err = $("#error");
-    // validate user input
+
     if ($userName.val().length === 0 || $pass.val().length === 0) {
       $err.prop("hidden", false).text("All fields required.");
     } else if ($userName.val().length > 20 || $pass.val().length > 20) {
@@ -159,11 +153,11 @@ export default class SignForm {
   }
 
   unmount() {
-    $("#toggleBtn").unbind("click", this.toggleForm);
-    $("#signinBtn").unbind("click", this.signIn);
-    $("#signupBtn").unbind("click", this.signUp);
+    $("#toggleBtn").off("click");
+    $("#signinBtn").off("click");
+    $("#signupBtn").off("click");
 
-    this.$container.text("");
+    this.$container.html("");
     if (this.router) this.router();
   }
 }

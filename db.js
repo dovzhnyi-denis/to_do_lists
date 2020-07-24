@@ -65,7 +65,7 @@ function initTasks(){
 
 function insertUser(name, pass, srvRes, session){
   let id = new Date().getTime();
-  session.id = id;
+  session.userId = id;
 
   bcrypt.hash(pass, saltRounds, (err, hash) => {
     const sql = `INSERT INTO users (id, name, password) VALUES ("${id}", "${name}", "${hash}")`;

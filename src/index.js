@@ -10,7 +10,7 @@ $().ready(() => {
   $container.addClass=("container-fluid");
 
   router();
-
+ 
   async function router(){
     const prof = await fetch("/profile");
     if (prof.status === 200) profile.mount(router);
