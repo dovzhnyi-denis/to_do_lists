@@ -19,8 +19,6 @@ export default function signFormTest() {
       $cPass,
       $err;
 
-    $container.hide();
-
     beforeEach(() => {
       signForm.mount();
 

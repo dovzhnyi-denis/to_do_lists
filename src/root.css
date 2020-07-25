@@ -17,20 +17,36 @@ html {
   font-size: 1.5rem;
 }
 
-#signout-tip {
-  position: fixed;
-  right: 3.4rem;
-  font-size: 1rem;
-  top: 1.4rem;
+.signout {
+  right: -3rem;
+  top: .3rem;
+}
+
+.tip {
+  position: absolute; 
   padding: 0 2px;
   color: white;
-  visibility: hidden;
+  font-size: 1rem;
+  padding: 0 2px;
   background-color: #6c757d;
   border-radius: 6px;
   border-color: #6c757d;
 }
 
-#signout:hover #signout-tip {
-  opacity: 1;
+.pen {
+  bottom: 3rem;
+  right: -.8rem;
+  width: 9rem;
+  text-align: center;
+}
+
+.trash {
+  bottom: 3rem;
+  right: -.8rem;
+  width: 8rem;
+  text-align: center;
+}
+
+#edProjName:hover .tip {
   visibility: visible;
 }

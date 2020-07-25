@@ -6,8 +6,8 @@
   "scripts": {
     "build": "webpack -p",
     "watch": "webpack --watch",
-    "test": "webpack -dw --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
-    "mocha": "nyc --reporter=text mocha srv-test"
+    "build-test": "webpack -dw --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
+    "test": "nyc --reporter=text mocha"
   },
   "author": "Denys Dovzhnyi",
   "license": "ISC",
