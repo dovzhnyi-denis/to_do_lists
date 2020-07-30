@@ -28,7 +28,6 @@ function initUsers() {
         const users = "CREATE TABLE users (id BIGINT(15), name VARCHAR(20), password VARCHAR(255))";
         pool.query(users, (err, res) => {
           if (err) throw err;
-//          console.log("table users(id, name, password) created");
         });
       } else throw err;
     }
@@ -36,13 +35,12 @@ function initUsers() {
 }
 
 function initProjects(){
-  pool.query("SELECT * FROM projects", (err, res) => {
+  pool.query("SELECT * FROM todo_lists", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const projects = "CREATE TABLE projects (id BIGINT(15), name VARCHAR(20))";
-        pool.query(projects, (err, res) => {
+        const todo_lists = "CREATE TABLE todo_lists (id BIGINT(15), name VARCHAR(20), user_id BIGINT(15))";
+        pool.query(todo_lists, (err, res) => {
           if (err) throw err;
-//          console.log("table projects(id, name) created");
         });
       } else throw err;
     }
@@ -53,10 +51,9 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(20), project_id BIGINT(15))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(20), project_id BIGINT(15), priority BIGINT(2))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
-//          console.log("table tasks(id, name, status, project_id) created");
         });
       } else throw err;
     }
@@ -73,6 +70,20 @@ function insertUser(name, pass, srvRes, session){
       if (err) throw err;
       srvRes.status(201).json({message: "User created"});
     });
+  });
+}
+
+function validUserId(userId, srvRes, cb) {
+  pool.query("SELECT id FROM users", (err, res) => {
+    if (err) throw err;
+
+    const matchedId = res.find(q => q.id === userId);
+
+    if (matchedId) {
+      cb();
+    } else {
+      srvRes.status(401).json({});
+    }
   });
 }
 
@@ -143,25 +154,58 @@ exports.db = {
     }
   },
 
-  signedIn(userId, srvRes){
+  profile(userId, srvRes){
     try {
-      if (!userId) throw new Error("unauthorized");
-      console.log(userId);
-      pool.query("SELECT id FROM users", (err, res) => {
-        if (err) throw err;
+      validUserId(userId, srvRes, () => {
+        const sql = `SELECT * from todo_lists WHERE user_id = '${userId}'`;
 
-        const matchedId = res.find(q => q.id === userId);
-        
-        if (matchedId) {
-          srvRes.status(200).json({});
-        } else {
-          srvRes.status(401).json({});
-        }
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json(res)
+        });
       });
+
     } catch(err) {
       if (err.message === "unauthorized") {
         srvRes.status(401).json({message: err.message});
       } else srvRes.status(500).json({message: "server error"});
     }
-  }
+  },
+
+  insertList(listData, srvRes) {
+    try {
+      const { name, id, userId } = listData;      
+      const sql = `INSERT INTO todo_lists (id, name, user_id) VALUES ('${id}', '${name}', '${userId}')`;
+
+      pool.query(sql, (err, res) => {
+        if (err) throw err;
+        srvRes.status(201).json({});
+      })
+    } catch (err) {
+      srvRes.status(500).json(err);
+    }
+  },
+
+  insertTask(userId, body, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const { id,
+          descr,
+          projId,
+          priority,
+          status
+        } = body;
+        const sql = `INSERT INTO tasks (id, name, status, project_id, priority) VALUES ('${id}', '${descr}', '${status}', '${projId}', '${priority}')`;
+  
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+          srvRes.status(201).json({});
+        });
+      });
+    } catch (err) {
+      console.log(err)
+      srvRes.status(500).json({message: "internal server error"});
+    }
+  },
 };

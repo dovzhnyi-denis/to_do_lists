@@ -1,6 +1,8 @@
 export default class SignForm {
-  constructor($mountContainer = $("body")){
-    this.$container = $mountContainer;
+  constructor($container){
+    if (!$container)
+      throw new Error(`"$container undefined", nowhere no mount!`);
+    else this.$container = $container;
   }
 
   mount(router) {
@@ -157,7 +159,7 @@ export default class SignForm {
     $("#signinBtn").off("click");
     $("#signupBtn").off("click");
 
-    this.$container.html("");
+    $("#formContainer").remove();
     if (this.router) this.router();
   }
 }

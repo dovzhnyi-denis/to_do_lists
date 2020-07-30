@@ -1,14 +1,22 @@
+import List from "./list";
+
 export default class Profile {
-  constructor($mountContainer = $("body")) {
-    this.$container = $mountContainer;    
+  constructor($container) {
+    if (!$container)
+      throw new Error(`"$container undefined", nowhere no mount!`);
+    else this.$container = $container;
+    this.toDo = [];
   }
 
-  mount(router) {
+  mount(router, profData) {
     if (router) this.router = router;
+    if (!profData) throw new Error("profData is undefined");
+    
+    this.toDo = profData;
 
     this.$container.html(`
-      <div id="profileContainer" class="card bg-main-gradient">
-        <div id="qq" class="row">
+      <div id="profileContainer" class="bg-main-gradient overflow-auto">
+        <div class="row">
           <div class="col text-right">
             <span class="tip signout">Sign Out</span>
           </div>
@@ -18,26 +26,12 @@ export default class Profile {
             </button>
           </div>
         </div>
-        <div class="row">
-          <div class="col-8 text-right">
+        <div id="addList" class="row mb-3 cursor-pointer">
+          <div class="col-xs ml-auto pl-2 pr-1 d-flex align-items-center bg-grad-0">
+            <h2 class="my-0 pb-1 pressed-plus font-weight-bold">+</h2>
           </div>
-        </div>
-        <div id="projectContainer" class="m-auto w-100 d-flex justify-content-center">
-          <div class="row w-75 bg-primary p-2 d-flex align-items-center project-bar-bg font-lg">
-            <div class="col-md-2 d-flex justify-content-center">
-              <i class="fas fa-clipboard-list" style="font-size:2rem;"></i>
-            </div>
-            <div class="col-md-8 d-flex justify-content-start">
-              <input id="iProjName" class="text-white my-auto" type="text" readonly value="Project Name" style="background-color:transparent;border-color:transparent">
-            </div>
-            <div id="edProjName" class="col-md-1" style="position:relative;">
-              <i class="fas fa-pen m-auto text-center" style="cursor:pointer;"></i>
-              <span class="tip pen">Edit Project Name</span>
-            </div>
-            <div id="trashBtn" class="col-md-1">
-              <i class="far fa-trash-alt m-auto text-center" style="cursor:pointer"></i>
-              <span class="tip trash">Remove Project</span>
-            </div>
+          <div class="col-xs mr-auto pl-1 pr-2 pb-1 d-flex align-items-center bg-grad-0 text-center">
+            <h2 class="m-0 pressed-text bg-dark font-10 font-weight-bold">Add TODO List</h2>
           </div>
         </div>
       </div>
@@ -48,17 +42,32 @@ export default class Profile {
     $signoutBtn.on("click", () => this.signout());
     $signoutBtn.hover(() => $(".signout").toggle());
 
-    const $edProjName = $("#edProjName");
-    $edProjName.on("click", () => this.editProjectName());
-    $edProjName.hover(() => $(".pen").toggle());
-
-    $("#trashBtn").hover(() => $(".trash").toggle());
-
-    $("#iProjName").on("keypress", (e) => {
-      if(e.which === 13) // "Enter" key
-        $("#iProjName").prop("readonly", (i, val) => !val).blur();
-    });
+    $("#addList").on("click", () => this.addTodo());
    }
+
+  async addTodo() {
+    const $profile = $("#profileContainer");
+    const listData = {
+      name: "Things To Do",
+      id: new Date().getTime(),
+    };
+
+    this.toDo.push(new List($profile, listData));
+    this.toDo[this.toDo.length - 1].mount();
+
+    const options = {
+      method: "post",
+      body: JSON.stringify(listData),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    const res = await fetch("/insertlist", options);
+    if (res.status !== 201) {
+      const err = await res.json();
+      throw err;
+    }
+  }
 
   async signout() {
     const res = await fetch("/signout");
@@ -74,13 +83,8 @@ export default class Profile {
 
   unmount() {
     $("#signoutBtn").off();
-    $("#edProjName").off();
-    $("#iProjName").off();
-    $(".signout").off();
-    $(".pen").off();
-    $(".fa-trash-alt").off();
 
-    this.$container.html("");
+    $("#profileContainer").remove();
     if (this.router) this.router();
   }
 }
