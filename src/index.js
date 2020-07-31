@@ -12,7 +12,8 @@ $().ready(async () => {
 
   router();
  
-  async function router(){
+  async function router() {
+    // check if user is signed in, display profile if true, otherwise display sign in/up form
     const res = await fetch("/profile");
     if (res.status === 200) {
       const profData = await res.json();

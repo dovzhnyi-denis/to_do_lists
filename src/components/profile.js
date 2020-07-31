@@ -11,8 +11,7 @@ export default class Profile {
   mount(router, profData) {
     if (router) this.router = router;
     if (!profData) throw new Error("profData is undefined");
-    
-    this.toDo = profData;
+;
 
     this.$container.html(`
       <div id="profileContainer" class="bg-main-gradient overflow-auto">
@@ -26,7 +25,8 @@ export default class Profile {
             </button>
           </div>
         </div>
-        <div id="addList" class="row mb-3 cursor-pointer">
+        <div id="todoContainer"></div>
+        <div id="addList" class="row mx-auto width-100 bg-secondary mb-3 cursor-pointer">
           <div class="col-xs ml-auto pl-2 pr-1 d-flex align-items-center bg-grad-0">
             <h2 class="my-0 pb-1 pressed-plus font-weight-bold">+</h2>
           </div>
@@ -36,23 +36,38 @@ export default class Profile {
         </div>
       </div>
     `);
-    $(".tip").hide();
+    
+    this.showTodoLists(profData);
+    this.regEvents();
+  }
 
+  regEvents() {
     const $signoutBtn = $("#signoutBtn");
+    $(".tip").hide();
     $signoutBtn.on("click", () => this.signout());
     $signoutBtn.hover(() => $(".signout").toggle());
 
     $("#addList").on("click", () => this.addTodo());
-   }
+  }
+  
+  showTodoLists(profData) {
+    const $todo = $("#todoContainer");
+
+    profData.forEach(td =>
+      this.toDo.push(new List($todo, td))
+    );
+
+    this.toDo.forEach(td => td.mount());
+  }
 
   async addTodo() {
-    const $profile = $("#profileContainer");
+    const $todo = $("#todoContainer");
     const listData = {
       name: "Things To Do",
       id: new Date().getTime(),
     };
 
-    this.toDo.push(new List($profile, listData));
+    this.toDo.push(new List($todo, listData));
     this.toDo[this.toDo.length - 1].mount();
 
     const options = {

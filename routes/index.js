@@ -33,6 +33,14 @@ router.post("/inserttask", auth, (req, res) => {
   db.insertTask(req.session.userId, req.body, res);
 });
 
+router.post("/updlistname", auth, (req, res) => {
+  db.updateListName(req.session.userId, req.body, res);
+});
+
+router.post("/removelist", auth, (req, res) => {
+  db.removeList(req.session.userId, req.body, res);
+});
+
 router.get("/signout", (req, res) => {
   req.session.userId = undefined;
   res.status(200).json({});

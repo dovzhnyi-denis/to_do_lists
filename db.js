@@ -38,7 +38,7 @@ function initProjects(){
   pool.query("SELECT * FROM todo_lists", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const todo_lists = "CREATE TABLE todo_lists (id BIGINT(15), name VARCHAR(20), user_id BIGINT(15))";
+        const todo_lists = "CREATE TABLE todo_lists (id BIGINT(15), name VARCHAR(80), user_id BIGINT(15))";
         pool.query(todo_lists, (err, res) => {
           if (err) throw err;
         });
@@ -51,7 +51,7 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(20), project_id BIGINT(15), priority BIGINT(2))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(80), project_id BIGINT(15), priority BIGINT(2))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
         });
@@ -112,7 +112,7 @@ exports.db = {
       
     } catch(err) {
       console.log(err);
-      srvRes.status(500).json({error: "internal server error"});
+      srvRes.status(500).json({message: "server error"});
     }
   },
 
@@ -150,14 +150,14 @@ exports.db = {
 
     } catch (err) {
       console.log(err);
-      srvRes.status(500).json({error: "internal server error"});
+      srvRes.status(500).json({message: "server error"});
     }
   },
 
   profile(userId, srvRes){
     try {
-      validUserId(userId, srvRes, () => {
-        const sql = `SELECT * from todo_lists WHERE user_id = '${userId}'`;
+      validUserId(userId, srvRes, () => { 
+        const sql = `SELECT id, name from todo_lists WHERE user_id = '${userId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -187,7 +187,7 @@ exports.db = {
     }
   },
 
-  insertTask(userId, body, srvRes) {
+  insertTask(userId, taskData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
         const { id,
@@ -195,7 +195,7 @@ exports.db = {
           projId,
           priority,
           status
-        } = body;
+        } = taskData;
         const sql = `INSERT INTO tasks (id, name, status, project_id, priority) VALUES ('${id}', '${descr}', '${status}', '${projId}', '${priority}')`;
   
         pool.query(sql, (err, res) => {
@@ -205,7 +205,44 @@ exports.db = {
       });
     } catch (err) {
       console.log(err)
-      srvRes.status(500).json({message: "internal server error"});
+      srvRes.status(500).json({message: "server error"});
     }
   },
+
+  updateListName(userId, listData, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const { id,
+          name
+        } = listData;
+        const sql = `UPDATE todo_lists SET name = '${name}' WHERE id = '${id}'`;
+
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json({});
+        });
+      });
+    } catch (err) {
+        console.log(err);
+        srvRes.status(500).json({message: "server error"});
+    }
+  },
+
+  removeList(userId, listData, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const sql = `DELETE from todo_lists where id = '${listData.id}'`;
+
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json({});
+        });
+      });
+    } catch (err) {
+        console.log(err);
+        srvRes.status(500).json({message: "server error"});
+    }
+  }
 };
