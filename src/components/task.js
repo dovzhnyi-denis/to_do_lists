@@ -14,37 +14,74 @@ export default class Task {
 
     this.$container.append(`
       <div id="task${id}" class="row m-auto border-top">
-        <div id="status" class="col-md-1 text-center border-right d-flex align-items-center">
-          <i class="far fa-sticky-note font-15"></i>
+        <div id="status" class="col-md-1 border-right d-flex align-items-center">
+          <i class="far fa-sticky-note mx-auto font-15"></i>
         </div>
         <div class="col-md border-left border-right ml-1 d-flex align-items-center">
           <p class="my-auto break-words">${name}</p>
         </div>
-        <div class="col-1 d-flex justify-content-center">
+        <div class="col-1 m-auto d-flex justify-content-center">
           <dov class="d-flex flex-column justify-content-center align-items-center">
-            <i class="fas fa-sort-up font-15 text-secondary cursor-pointer"></i>
-            <img src="https://img.icons8.com/office/16/000000/horizontal-line.png"/>
-            <i class="fas fa-sort-down font-15 text-secondary cursor-pointer"></i>
+            <canvas id="prioInc${id}" class="cursor-pointer" width="14" height="8"></canvas>
+            <canvas id="incDecSeparator${id}" width="18" height="6"></canvas>
+            <canvas id="prioDec${id}" class="cursor-pointer" width="14" height="8"></canvas>
           </dov>
         </div>
-        <div class="col-1 my-auto text-center">
+        <div class="col-1 m-auto text-center">
           <i class="fas fa-pen cursor-pointer"></i>
         </div>
-        <div class="col-1 my-auto text-center">
+        <div class="col-1 m-auto text-center">
           <i class="far fa-trash-alt cursor-pointer"></i> 
         </div>
       </div>
     `);
 
-//    $("#edProjName").on("click", () => this.editProjectName());
-//
-//    $("#trashBtn").on("click", () => this.unmount());
-//
-//    $("#iProjName").on("keypress", (e) => {
-//      if(e.which === 13) // "Enter" key
-//        $("#iProjName").prop("readonly", (i, val) => !val).blur();
-//    });
+    this.drawIcons(id);
+  }
 
+  drawIcons(id) {
+    this.prioInc(id);
+    this.prioDec(id);
+    this.incDecSeparator(id);
+  }
+
+  incDecSeparator(id) {
+    const ctx = document.querySelector(`#incDecSeparator${id}`).getContext("2d");
+
+    ctx.moveTo(0,3);
+    ctx.lineTo(18,3);
+
+    ctx.strokeStyle = "#6c757d";
+    ctx.stroke();
+  }
+
+  prioDec(id) {
+    const ctx = document.querySelector(`#prioDec${id}`).getContext("2d");
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(7,8);
+    ctx.lineTo(14,0);
+    ctx.closePath();
+
+    ctx.strokeStyle = "transparent";
+    ctx.stroke();
+
+    ctx.fillStyle = "#6c757d";
+    ctx.fill();
+  }
+
+  prioInc(id) {
+    const ctx = document.querySelector(`#prioInc${id}`).getContext("2d");
+    ctx.moveTo(0,8);
+    ctx.lineTo(7,0);
+    ctx.lineTo(14,8);
+    ctx.closePath();
+
+    ctx.strokeStyle = "transparent";
+    ctx.stroke();
+
+    ctx.fillStyle = "#6c757d";
+    ctx.fill();
   }
 
   editProjectName() {
