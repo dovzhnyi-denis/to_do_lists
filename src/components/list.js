@@ -51,7 +51,24 @@ export default class List{
     `);
     
     this.regEvents(id);
-    
+    this.getTasks(id);
+  }
+
+  async getTasks(id) {
+    const options = {
+      method: "post",
+      body: JSON.stringify({todoListId: id}),
+      headers: {
+        "content-type": "application/json"
+      }
+    };
+
+    const res = await fetch("/gettasks", options);
+    const body = await res.json();
+    if (res.status !== 200) throw body;;
+
+    const $tasks = $(`#tasks${id}`);
+    body.forEach(t => this.tasks.push(new Task($tasks, t)));
     if (this.tasks.length > 0) 
       this.tasks.forEach((t) => t.mount());
   }
@@ -74,7 +91,7 @@ export default class List{
     const taskData = {
       id: new Date().getTime(),
       status: 1,
-      descr: "",
+      name: "",
       projId: this.data.id,
       priority: 0
     };
@@ -82,7 +99,7 @@ export default class List{
     if ($iNewTask.val().length === 0) 
       $iNewTask.prop("placeholder", "Task description required!"); 
     else {
-      taskData.descr= $iNewTask.val();
+      taskData.name = $iNewTask.val();
       this.tasks.push(new Task($tasks, taskData));
       this.tasks[this.tasks.length - 1].mount();
       $iNewTask.prop("placeholder", "Start typing here to create new task")

@@ -51,7 +51,7 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(80), project_id BIGINT(15), priority BIGINT(2))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(80), todo_list_id BIGINT(15), priority BIGINT(2))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
         });
@@ -157,7 +157,7 @@ exports.db = {
   profile(userId, srvRes){
     try {
       validUserId(userId, srvRes, () => { 
-        const sql = `SELECT id, name from todo_lists WHERE user_id = '${userId}'`;
+        const sql = `SELECT id, name FROM todo_lists WHERE user_id = '${userId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -191,12 +191,12 @@ exports.db = {
     try {
       validUserId(userId, srvRes, () => {
         const { id,
-          descr,
+          name,
           projId,
           priority,
           status
         } = taskData;
-        const sql = `INSERT INTO tasks (id, name, status, project_id, priority) VALUES ('${id}', '${descr}', '${status}', '${projId}', '${priority}')`;
+        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${projId}', '${priority}')`;
   
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -232,7 +232,7 @@ exports.db = {
   removeList(userId, listData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const sql = `DELETE from todo_lists where id = '${listData.id}'`;
+        const sql = `DELETE FROM todo_lists where id = '${listData.id}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -243,6 +243,23 @@ exports.db = {
     } catch (err) {
         console.log(err);
         srvRes.status(500).json({message: "server error"});
+    }
+  },
+
+  getTasks(userId, listId, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const sql = `SELECT id, name, priority FROM tasks where todo_list_id = '${listId}'`;
+
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json(res);
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      srvRes.status(500).json({message: "server error"});
     }
   }
 };

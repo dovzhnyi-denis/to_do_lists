@@ -1,24 +1,24 @@
 export default class Task {
-  constructor($container, itemData) {
+  constructor($container, taskData) {
     if (!$container)
       throw new Error(`"$container undefined", nowhere no mount!`);
     else this.$container = $container;
-    this.data = itemData;
+    this.data = taskData;
   }
 
   mount() {
     const {
       id,
-      descr
+      name
     } = this.data;
 
     this.$container.append(`
-      <div id="task{id}" class="row m-auto border-top">
+      <div id="task${id}" class="row m-auto border-top">
         <div id="status" class="col-md-1 text-center border-right d-flex align-items-center">
           <i class="far fa-sticky-note font-15"></i>
         </div>
         <div class="col-md border-left border-right ml-1 d-flex align-items-center">
-          <p class="my-auto break-words">${descr}</p>
+          <p class="my-auto break-words">${name}</p>
         </div>
         <div class="col-1 d-flex justify-content-center">
           <dov class="d-flex flex-column justify-content-center align-items-center">

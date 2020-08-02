@@ -19,6 +19,11 @@ router.post("/signin", (req, res) => {
   db.signIn(req.body, res, req.session);
 });
 
+router.get("/signout", (req, res) => {
+  req.session.userId = undefined;
+  res.status(200).json({});
+});
+
 router.get("/profile", auth, (req, res) => {
   db.profile(req.session.userId, res);
 });
@@ -33,6 +38,10 @@ router.post("/inserttask", auth, (req, res) => {
   db.insertTask(req.session.userId, req.body, res);
 });
 
+router.post("/gettasks", auth, (req, res) => {
+  db.getTasks(req.session.userId, req.body.todoListId, res);
+});
+
 router.post("/updlistname", auth, (req, res) => {
   db.updateListName(req.session.userId, req.body, res);
 });
@@ -40,10 +49,5 @@ router.post("/updlistname", auth, (req, res) => {
 router.post("/removelist", auth, (req, res) => {
   db.removeList(req.session.userId, req.body, res);
 });
-
-router.get("/signout", (req, res) => {
-  req.session.userId = undefined;
-  res.status(200).json({});
-})
 
 module.exports = router;

@@ -124,7 +124,7 @@ html {
   hyphens: auto;
 }
 
-.border-top:hover {
+.border-top.m-auto:hover {
   background-color: #fcfed5; 
 }
 
