@@ -59,7 +59,7 @@ export default class Task {
     });
     $iTaskName.focusout(() => this.dbUpdTaskName(id));
 
-    $(`#delTask${id}`).on("click", () => thid.delTask(id));
+    $(`#delTask${id}`).on("click", () => this.delTask(id));
   }
 
   async dbUpdTaskName(id) {
@@ -85,8 +85,22 @@ export default class Task {
     }
   }
 
-  delTask(id) {
+  async delTask(id) {
+    const options = {
+      method: "post",
+      body: JSON.stringify({id}),
+      headers: {
+        "content-type": "application/json"
+      }
+    };
+    const res = await fetch("/removetask", options);
 
+    if (res.status !== 200) {
+      const err = await res.json();
+      throw err;
+    }
+
+    this.unmount();
   }
 
   edTaskName(id) {
@@ -182,7 +196,8 @@ export default class Task {
     $(`#edTaskName${id}`).off();
     $(`#iTaskName${id}`).off();
     $(`#delTask${id}`).off();
+    $(`#delTask${id}`).off();
 
-    $(`#task{this.data.id}`).remove();
+    $(`#task${this.data.id}`).remove();
   }
 }

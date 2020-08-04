@@ -81,7 +81,7 @@ export default class List{
     });
     $(`#iListName${id}`).focusout(() => this.dbUpdListName(id));
 
-    $(`#trashBtn${id}`).on("click", () => this.unmount(id));
+    $(`#trashBtn${id}`).on("click", () => this.dbRemoveList(id));
     $(`#addTask${id}`).on("click", () => this.addTask(id));
   }
 
@@ -155,18 +155,13 @@ export default class List{
   }
 
   unmount() {
-    const {
-      id,
-      name
-    } = this.data;
+    const { id } = this.data;
 
     $(`#edName${id}`).off();
     $(`#iListName${id}`).off();
     $(`#trashBtn${id}`).off();
     $(`#addTask${id}`).off();
     $(`#todoList${id}`).remove();
-    
-    this.dbRemoveList(id);
   }
 
   async dbRemoveList(id) {
@@ -183,5 +178,7 @@ export default class List{
       const err = await res.json();
       throw err;
     }
+
+    this.unmount();
   }
 }

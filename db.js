@@ -281,5 +281,23 @@ exports.db = {
       console.log(err);
       srvRes.status(500).json({message: "server error"});
     }
+  },
+
+  remTask(userId, taskData, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const { id } = taskData;
+        const sql = `DELETE FROM tasks WHERE id = '${id}'`;
+
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json({message: "task entry removed"});
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      srvRes.status(500).json({message: "server error"});
+    }
   }
 };

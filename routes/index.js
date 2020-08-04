@@ -54,4 +54,8 @@ router.post("/updtaskname", auth, (req, res) => {
   db.updTaskName(req.session.userId, req.body, res);
 });
 
+router.post("/removetask", auth, (req, res) => {
+  db.remTask(req.session.userId, req.body, res);
+});
+
 module.exports = router;
