@@ -28,7 +28,7 @@ export default class SignForm {
           </div>
           <div id="confirmPass" class="row d-none justify-content-center">
             <div class="col-sm-6 p-3">
-              <input id="passCheck" type="text" class="form-control" placeholder="Confirm pass">
+              <input id="iConfirmPass" type="text" class="form-control" placeholder="Confirm pass">
             </div>
           </div>
           <div class="row text-center">
@@ -79,7 +79,7 @@ export default class SignForm {
   async signUp() {
     const $userName = $("#userName");
     const $pass = $("#pass");
-    const $passCheck = $("#confirmPass");
+    const $passCheck = $("#iConfirmPass");
     const $err = $("#error");
 
     if ($userName.val().length === 0 || $pass.val().length === 0 ||

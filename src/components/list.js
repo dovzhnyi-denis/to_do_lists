@@ -102,12 +102,12 @@ export default class List{
       $iNewTask.prop("placeholder", "Task description required!"); 
     else {
       taskData.name = $iNewTask.val();
-      if (!(await this.dbInsertTask(taskData))) {
-        this.tasks.push(new Task($tasks, taskData));
-        this.tasks[this.tasks.length - 1].mount();
-        $iNewTask.prop("placeholder", "Start typing here to create new task")
+      this.tasks.push(new Task($tasks, taskData));
+      this.tasks[this.tasks.length - 1].mount();
+      $iNewTask.prop("placeholder", "Start typing here to create new task")
           .val("");
-      }
+      if (!(await this.dbInsertTask(taskData)))
+        $(`err${id}`).text("Database error. Unable to insert task.");
     }
   }
 
@@ -123,7 +123,6 @@ export default class List{
 
     if (res.status !== 201) {
       let body = await res.json();
-      $(`err${id}`).text(body.message);
       return 1;
     }
     return 0;
