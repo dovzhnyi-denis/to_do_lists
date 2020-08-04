@@ -30,7 +30,7 @@ export default class Task {
         <div id="edTaskName${id}" class="col-1 m-auto text-center">
           <i class="fas fa-pen cursor-pointer"></i>
         </div>
-        <div class="col-1 m-auto text-center">
+        <div id="delTask${id}" class="col-1 m-auto text-center">
           <i class="far fa-trash-alt cursor-pointer"></i> 
         </div>
       </div>
@@ -58,6 +58,8 @@ export default class Task {
         this.edTaskName(id);
     });
     $iTaskName.focusout(() => this.dbUpdTaskName(id));
+
+    $(`#delTask${id}`).on("click", () => thid.delTask(id));
   }
 
   async dbUpdTaskName(id) {
@@ -74,7 +76,7 @@ export default class Task {
       }
     };
 
-    $iTaskName.removeProp("contenteditable");
+    $iTaskName.removeAttr("contenteditable");
 
     const res = await fetch("/updtaskname", options);
     if (res.status !== 200) {
@@ -83,11 +85,15 @@ export default class Task {
     }
   }
 
+  delTask(id) {
+
+  }
+
   edTaskName(id) {
     const $iTaskName = $(`#iTaskName${id}`);
 
     if ($iTaskName.prop("contenteditable") !== "inherit") {
-      $iTaskName.removeProp("contenteditable");
+      $iTaskName.removeAttr("contenteditable");
     } else {
       $iTaskName.prop("contenteditable", true);
       $iTaskName.focus();
@@ -169,8 +175,13 @@ export default class Task {
   }
 
   unmount() {
+    const { id } = this.data;
+
     $(`#prioInc${id}`).off();
     $(`#prioDec${id}`).off();
+    $(`#edTaskName${id}`).off();
+    $(`#iTaskName${id}`).off();
+    $(`#delTask${id}`).off();
 
     $(`#task{this.data.id}`).remove();
   }
