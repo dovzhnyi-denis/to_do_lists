@@ -34,7 +34,7 @@ function initUsers() {
   });
 }
 
-function initProjects(){
+function initLists(){
   pool.query("SELECT * FROM todo_lists", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
@@ -51,7 +51,7 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(20), status VARCHAR(80), todo_list_id BIGINT(15), priority BIGINT(2))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(255), status INT(1), todo_list_id BIGINT(15), priority BIGINT(2))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
         });
@@ -90,7 +90,7 @@ function validUserId(userId, srvRes, cb) {
 exports.db = {
   init(){
       errHandler(initUsers());
-      errHandler(initProjects());
+      errHandler(initLists());
       errHandler(initTasks());
   },
 
@@ -187,28 +187,6 @@ exports.db = {
     }
   },
 
-  insertTask(userId, taskData, srvRes) {
-    try {
-      validUserId(userId, srvRes, () => {
-        const { id,
-          name,
-          projId,
-          priority,
-          status
-        } = taskData;
-        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${projId}', '${priority}')`;
-  
-        pool.query(sql, (err, res) => {
-          if (err) throw err;
-          srvRes.status(201).json({});
-        });
-      });
-    } catch (err) {
-      console.log(err)
-      srvRes.status(500).json({message: "server error"});
-    }
-  },
-
   updateListName(userId, listData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
@@ -246,6 +224,28 @@ exports.db = {
     }
   },
 
+  insertTask(userId, taskData, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const { id,
+          name,
+          projId,
+          priority,
+          status
+        } = taskData;
+        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${projId}', '${priority}')`;
+  
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+          srvRes.status(201).json({message: "task inserted"});
+        });
+      });
+    } catch (err) {
+      console.log(err)
+      srvRes.status(500).json({message: "server error"});
+    }
+  },
+
   getTasks(userId, listId, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
@@ -255,6 +255,26 @@ exports.db = {
           if (err) throw err;
 
           srvRes.status(200).json(res);
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      srvRes.status(500).json({message: "server error"});
+    }
+  },
+
+  updTaskName(userId, taskData, srvRes) {
+    try {
+      validUserId(userId, srvRes, () => {
+        const { id,
+          name
+        } = taskData;
+        const sql = `UPDATE tasks SET name = '${name}' WHERE id = '${id}'`;
+
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+
+          srvRes.status(200).json({message: "task name updated"});
         });
       });
     } catch (err) {

@@ -34,6 +34,14 @@ router.post("/insertlist", auth, (req, res) => {
   db.insertList(req.body, res);  
 });
 
+router.post("/updlistname", auth, (req, res) => {
+  db.updateListName(req.session.userId, req.body, res);
+});
+
+router.post("/removelist", auth, (req, res) => {
+  db.removeList(req.session.userId, req.body, res);
+});
+
 router.post("/inserttask", auth, (req, res) => {
   db.insertTask(req.session.userId, req.body, res);
 });
@@ -42,12 +50,8 @@ router.post("/gettasks", auth, (req, res) => {
   db.getTasks(req.session.userId, req.body.todoListId, res);
 });
 
-router.post("/updlistname", auth, (req, res) => {
-  db.updateListName(req.session.userId, req.body, res);
-});
-
-router.post("/removelist", auth, (req, res) => {
-  db.removeList(req.session.userId, req.body, res);
+router.post("/updtaskname", auth, (req, res) => {
+  db.updTaskName(req.session.userId, req.body, res);
 });
 
 module.exports = router;

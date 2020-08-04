@@ -22,7 +22,7 @@ export default class List{
             <i class="fas fa-clipboard-list font-20"></i>
           </div>
           <div class="col-md px-0">
-            <input id="iName${id}" class="w-100 py-1 mx-auto text-white bg-brdr-transparent" type="text" readonly value="${name}" >
+            <input id="iListName${id}" class="w-100 py-1 mx-auto text-white text-truncate bg-brdr-transparent" type="text" maxlength="50" readonly value="${name}">
           </div>
           <div id="edName${id}" class="col-md-1 text-center" >
             <i class="fas fa-pen cursor-pointer"></i>
@@ -75,11 +75,11 @@ export default class List{
 
   regEvents(id) {
     $(`#edName${id}`).on("click", () => this.edName(id));
-    $(`#iName${id}`).on("keypress", (e) => {
+    $(`#iListName${id}`).on("keypress", (e) => {
       if(e.which === 13) // "Enter" key
         this.edName(id);
     });
-    $(`#iName${id}`).focusout(() => this.dbUpdName(id));
+    $(`#iListName${id}`).focusout(() => this.dbUpdListName(id));
 
     $(`#trashBtn${id}`).on("click", () => this.unmount(id));
     $(`#addTask${id}`).on("click", () => this.addTask(id));
@@ -92,7 +92,7 @@ export default class List{
       id: new Date().getTime(),
       status: 1,
       name: "",
-      projId: this.data.id,
+      todo_list_id: this.data.id,
       priority: 0
     };
     
@@ -124,11 +124,11 @@ export default class List{
     }
   }
 
-  async dbUpdName(id) {
-    const $iName = $(`#iName${id}`);
+  async dbUpdListName(id) {
+    const $iListName = $(`#iListName${id}`);
     const listData = {
       id,
-      name: $iName.val()
+      name: $iListName.val()
     };
     const options = {
       method: "post",
@@ -138,7 +138,7 @@ export default class List{
       }
     };
 
-    $iName.prop("readonly", true);
+    $iListName.prop("readonly", true);
 
     const res = await fetch("/updlistname", options);
     if (res.status !== 200) {
@@ -148,10 +148,10 @@ export default class List{
   }
 
   edName(id) {
-    const $iName = $(`#iName${id}`);
+    const $iListName = $(`#iListName${id}`);
 
-    $iName.prop("readonly", (i, val) => !val);
-    $iName.is(":focus") ? $iName.blur(): $iName.focus();
+    $iListName.prop("readonly", (i, val) => !val);
+    $iListName.is(":focus") ? $iListName.blur(): $iListName.focus();
   }
 
   unmount() {
@@ -161,7 +161,7 @@ export default class List{
     } = this.data;
 
     $(`#edName${id}`).off();
-    $(`#iName${id}`).off();
+    $(`#iListName${id}`).off();
     $(`#trashBtn${id}`).off();
     $(`#addTask${id}`).off();
     $(`#todoList${id}`).remove();
