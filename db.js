@@ -112,7 +112,7 @@ exports.db = {
       
     } catch(err) {
       console.log(err);
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -150,7 +150,7 @@ exports.db = {
 
     } catch (err) {
       console.log(err);
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -169,7 +169,7 @@ exports.db = {
     } catch(err) {
       if (err.message === "unauthorized") {
         srvRes.status(401).json({message: err.message});
-      } else srvRes.status(500).json({message: "server error"});
+      } else srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -203,7 +203,7 @@ exports.db = {
       });
     } catch (err) {
         console.log(err);
-        srvRes.status(500).json({message: "server error"});
+        srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -220,7 +220,7 @@ exports.db = {
       });
     } catch (err) {
         console.log(err);
-        srvRes.status(500).json({message: "server error"});
+        srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -229,11 +229,11 @@ exports.db = {
       validUserId(userId, srvRes, () => {
         const { id,
           name,
-          projId,
+          todo_list_id,
           priority,
           status
         } = taskData;
-        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${projId}', '${priority}')`;
+        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${todo_list_id}', '${priority}')`;
   
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -242,7 +242,7 @@ exports.db = {
       });
     } catch (err) {
       console.log(err)
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -259,7 +259,7 @@ exports.db = {
       });
     } catch (err) {
       console.log(err);
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -279,7 +279,7 @@ exports.db = {
       });
     } catch (err) {
       console.log(err);
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   },
 
@@ -297,7 +297,7 @@ exports.db = {
       });
     } catch (err) {
       console.log(err);
-      srvRes.status(500).json({message: "server error"});
+      srvRes.status(500).json({message: "database error"});
     }
   }
 };

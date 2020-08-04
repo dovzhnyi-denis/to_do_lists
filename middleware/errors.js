@@ -14,7 +14,7 @@ module.exports.catchEmAll = (err, req, res, next) => {
     if (!err.status || err.status >= 500) {
         // log error to console before replacing it with generic message for user
         console.log(err.message);
-        err.message = "Internal server error.";
+        err.message = "server error";
     }
 
     res.json({

@@ -45,7 +45,7 @@ export default class List{
         <div id="tasks${id}" class="border border-top-0 bg-white">
         </div>
         <div class="row w-100 mx-auto border-bot-round bg-white">
-          <p class="col"></p>
+          <p id="err${id}" class="col text-center my-0 p-1 text-danger"></p>
         </div>
       </div>
     `);
@@ -85,7 +85,7 @@ export default class List{
     $(`#addTask${id}`).on("click", () => this.addTask(id));
   }
 
-  addTask(id) {
+  async addTask(id) {
     const $iNewTask = $(`#iNewTask${id}`);
     const $tasks = $(`#tasks${id}`);
     const taskData = {
@@ -95,16 +95,19 @@ export default class List{
       todo_list_id: this.data.id,
       priority: 0
     };
+    // reset error field
+    $(`err${id}`).text();
     
     if ($iNewTask.val().length === 0) 
       $iNewTask.prop("placeholder", "Task description required!"); 
     else {
       taskData.name = $iNewTask.val();
-      this.tasks.push(new Task($tasks, taskData));
-      this.tasks[this.tasks.length - 1].mount();
-      $iNewTask.prop("placeholder", "Start typing here to create new task")
-        .val("");
-      this.dbInsertTask(taskData);
+      if (!(await this.dbInsertTask(taskData))) {
+        this.tasks.push(new Task($tasks, taskData));
+        this.tasks[this.tasks.length - 1].mount();
+        $iNewTask.prop("placeholder", "Start typing here to create new task")
+          .val("");
+      }
     }
   }
 
@@ -120,8 +123,10 @@ export default class List{
 
     if (res.status !== 201) {
       let body = await res.json();
-      $("#err").text(body.message);
+      $(`err${id}`).text(body.message);
+      return 1;
     }
+    return 0;
   }
 
   async dbUpdListName(id) {
@@ -137,18 +142,23 @@ export default class List{
         "content-type": "application/json"
       }
     };
+    // reset error field
+    $(`err${id}`).text();
 
     $iListName.prop("readonly", true);
 
     const res = await fetch("/updlistname", options);
     if (res.status !== 200) {
       const err = await res.json();
+      $(`err${id}`).text(err.message);
       throw err;
     }
   }
 
   edName(id) {
     const $iListName = $(`#iListName${id}`);
+    // reset error field
+    $(`err${id}`).text();
 
     $iListName.prop("readonly", (i, val) => !val);
     $iListName.is(":focus") ? $iListName.blur(): $iListName.focus();
@@ -173,9 +183,12 @@ export default class List{
       }
     };
     const res = await fetch("/removelist", options);
+    // reset error field
+    $(`err${id}`).text();
 
     if (res.status !== 200) {
       const err = await res.json();
+      $(`err${id}`).text(err.message);
       throw err;
     }
 

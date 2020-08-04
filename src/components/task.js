@@ -93,14 +93,15 @@ export default class Task {
         "content-type": "application/json"
       }
     };
+
+    this.unmount();
+
     const res = await fetch("/removetask", options);
 
     if (res.status !== 200) {
       const err = await res.json();
       throw err;
     }
-
-    this.unmount();
   }
 
   edTaskName(id) {
