@@ -83,6 +83,10 @@ export default class List{
 
     $(`#trashBtn${id}`).on("click", () => this.dbRemoveList(id));
     $(`#addTask${id}`).on("click", () => this.addTask(id));
+    $(`#iNewTask${id}`).on("keypress", (e) => {
+      if(e.which === 13) // "Enter" key
+        this.addTask(id);
+    });
   }
 
   async addTask(id) {
@@ -170,6 +174,8 @@ export default class List{
     $(`#iListName${id}`).off();
     $(`#trashBtn${id}`).off();
     $(`#addTask${id}`).off();
+    $(`#iNewTask${id}`).off();
+
     $(`#todoList${id}`).remove();
   }
 

@@ -53,10 +53,10 @@ export default class Task {
 
     $edTaskName.click(() => this.edTaskName(id));
 
-    $iTaskName.on("keypress", (e) => {
-      if(e.which === 13) // "Enter" key
-        this.edTaskName(id);
-    });
+//    $iTaskName.on("keypress", (e) => {
+//      if(e.which === 13) // "Enter" key
+//        this.edTaskName(id);
+//    });
     $iTaskName.focusout(() => this.dbUpdTaskName(id));
 
     $(`#delTask${id}`).on("click", () => this.delTask(id));
