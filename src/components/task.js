@@ -44,30 +44,28 @@ export default class Task {
     const $prioDec = $(`#prioDec${id}`);
     const $edTaskName = $(`#edTaskName${id}`);
     const $iTaskName = $(`#iTaskName${id}`);
+    const dec = +1;
+    const inc = -1;
 
     $prioInc.on("mouseenter", () => this.prioIncHover(id));
     $prioInc.on("mouseleave", () => this.prioInc(id));
+    $prioInc.on("click", () => this.data.changePrio(id, inc));
 
     $prioDec.on("mouseenter", () => this.prioDecHover(id));
     $prioDec.on("mouseleave", () => this.prioDec(id));
+    $prioDec.on("click", () => this.data.changePrio(id, dec));
 
     $edTaskName.click(() => this.edTaskName(id));
 
-//    $iTaskName.on("keypress", (e) => {
-//      if(e.which === 13) // "Enter" key
-//        this.edTaskName(id);
-//    });
-    $iTaskName.focusout(() => this.dbUpdTaskName(id));
+    $iTaskName.focusout(() => this.dbUpdTask(id));
 
     $(`#delTask${id}`).on("click", () => this.delTask(id));
   }
 
-  async dbUpdTaskName(id) {
+  async dbUpdTask(id) {
     const $iTaskName = $(`#iTaskName${id}`);
-    const taskData = {
-      id,
-      name: $iTaskName.text()
-    };
+    this.data.name = $iTaskName.text();
+    const taskData = this.data;
     const options = {
       method: "post",
       body: JSON.stringify(taskData),
@@ -78,7 +76,7 @@ export default class Task {
 
     $iTaskName.removeAttr("contenteditable");
 
-    const res = await fetch("/updtaskname", options);
+    const res = await fetch("/updtask", options);
     if (res.status !== 200) {
       const err = await res.json();
       throw err;
@@ -196,7 +194,6 @@ export default class Task {
     $(`#prioDec${id}`).off();
     $(`#edTaskName${id}`).off();
     $(`#iTaskName${id}`).off();
-    $(`#delTask${id}`).off();
     $(`#delTask${id}`).off();
 
     $(`#task${this.data.id}`).remove();

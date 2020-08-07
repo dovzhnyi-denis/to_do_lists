@@ -50,8 +50,8 @@ router.post("/gettasks", auth, (req, res) => {
   db.getTasks(req.session.userId, req.body.todoListId, res);
 });
 
-router.post("/updtaskname", auth, (req, res) => {
-  db.updTaskName(req.session.userId, req.body, res);
+router.post("/updtask", auth, (req, res) => {
+  db.updTask(req.session.userId, req.body, res);
 });
 
 router.post("/removetask", auth, (req, res) => {

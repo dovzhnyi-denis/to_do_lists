@@ -263,13 +263,14 @@ exports.db = {
     }
   },
 
-  updTaskName(userId, taskData, srvRes) {
+  updTask(userId, taskData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
         const { id,
-          name
+          name,
+          priority
         } = taskData;
-        const sql = `UPDATE tasks SET name = '${name}' WHERE id = '${id}'`;
+        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}' WHERE id = '${id}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;

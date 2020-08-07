@@ -1,12 +1,40 @@
 import Task from "./task";
 
 export default class List{
-  constructor($container, projData) {
+  constructor($container, listData) {
     if (!$container)
       throw new Error(`"$container undefined", nowhere no mount!`);
     else this.$container = $container;
-    this.data = projData;
-    this.tasks= [];
+    this.data = listData;
+    this.tasks = [];
+    
+    this.changePrio = (id, delta) => {
+      this.tasks.forEach((t, i, arr) => {
+        if (t.data.id === id) {
+          if (delta < 0 && i > 0) {
+            // set priority of previous arr item to current item index
+            arr[i - 1].data.priority = i;
+            // set priority of current arr item to previous item index
+            arr[i].data.priority = i - 1;
+            
+            arr[i - 1].dbUpdTask(arr[i - 1].data.id);
+            t.dbUpdTask(t.data.id);
+          } else if (delta > 0 && i < arr.length - 1) {
+            // set priority of current arr item to next item index 
+            arr[i].data.priority = i + 1;
+            // set priority of next arr item to current item index
+            arr[i + 1].data.priority = i;
+
+            t.dbUpdTask(t.data.id);
+            arr[i + 1].dbUpdTask(arr[i + 1].data.id);
+          }
+        }
+      });
+      // apply sort algorithm to swap tasks array item positions
+      this.sortTasks();
+      // display sorted list of tasks
+      this.refreshList();
+    };
   }
 
   mount() {
@@ -54,25 +82,6 @@ export default class List{
     this.getTasks(id);
   }
 
-  async getTasks(id) {
-    const options = {
-      method: "post",
-      body: JSON.stringify({todoListId: id}),
-      headers: {
-        "content-type": "application/json"
-      }
-    };
-
-    const res = await fetch("/gettasks", options);
-    const body = await res.json();
-    if (res.status !== 200) throw body;;
-
-    const $tasks = $(`#tasks${id}`);
-    body.forEach(t => this.tasks.push(new Task($tasks, t)));
-    if (this.tasks.length > 0) 
-      this.tasks.forEach((t) => t.mount());
-  }
-
   regEvents(id) {
     $(`#edName${id}`).on("click", () => this.edName(id));
     $(`#iListName${id}`).on("keypress", (e) => {
@@ -89,6 +98,54 @@ export default class List{
     });
   }
 
+  refreshList() {
+    const { id } = this.data;
+
+    $(`#tasks${id}`).html("");
+
+    this.tasks.forEach(t => t.mount());
+  }
+
+  async getTasks(id) {
+    const options = {
+      method: "post",
+      body: JSON.stringify({todoListId: id}),
+      headers: {
+        "content-type": "application/json"
+      }
+    };
+
+    const res = await fetch("/gettasks", options);
+    const body = await res.json();
+    if (res.status !== 200) throw body;;
+
+    const $tasks = $(`#tasks${id}`);
+    body.forEach(t => {
+      t.changePrio = this.changePrio;
+      this.tasks.push(new Task($tasks, t));
+    });
+    if (this.tasks.length > 0) {
+      this.sortTasks();
+      this.tasks.forEach((t) => t.mount());
+    }
+  }
+
+  sortTasks() {
+    const sorted = quicksort(this.tasks);
+    this.tasks = sorted;
+    function quicksort(arr) {
+      if (arr.length <= 1) return arr;
+      let pivot = arr[0];
+      let left = [];
+      let right = [];
+      let arrLength = arr.length;
+      for (let i = 1; i < arrLength; ++i) {
+        arr[i].data.priority < pivot.data.priority ? left.push(arr[i]) : right.push(arr[i]);
+      }
+      return quicksort(left).concat(pivot, quicksort(right));
+    }
+  }
+
   async addTask(id) {
     const $iNewTask = $(`#iNewTask${id}`);
     const $tasks = $(`#tasks${id}`);
@@ -97,16 +154,20 @@ export default class List{
       status: 1,
       name: "",
       todo_list_id: this.data.id,
-      priority: 0
+      priority: 0,
+      changePrio: this.changePrio 
     };
     // reset error field
     $(`err${id}`).text();
-    
+
     if ($iNewTask.val().length === 0) 
-      $iNewTask.prop("placeholder", "Task description required!"); 
+      $iNewTask.prop("placeholder", "Task description required!");
     else {
       taskData.name = $iNewTask.val();
       this.tasks.push(new Task($tasks, taskData));
+      // task priority should equal current index in the "this.tasks" array
+      // it's used to save tasks array index in sql database
+      this.tasks[this.tasks.length - 1].data.priority = this.tasks.length - 1;
       this.tasks[this.tasks.length - 1].mount();
       $iNewTask.prop("placeholder", "Start typing here to create new task")
           .val("");
