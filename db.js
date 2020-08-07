@@ -249,7 +249,7 @@ exports.db = {
   getTasks(userId, listId, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const sql = `SELECT id, name, priority FROM tasks where todo_list_id = '${listId}'`;
+        const sql = `SELECT id, name, priority, status FROM tasks where todo_list_id = '${listId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -268,9 +268,10 @@ exports.db = {
       validUserId(userId, srvRes, () => {
         const { id,
           name,
-          priority
+          priority,
+          status
         } = taskData;
-        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}' WHERE id = '${id}'`;
+        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}', status = '${status}' WHERE id = '${id}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;

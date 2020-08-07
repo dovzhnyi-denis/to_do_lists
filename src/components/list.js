@@ -151,7 +151,7 @@ export default class List{
     const $tasks = $(`#tasks${id}`);
     const taskData = {
       id: new Date().getTime(),
-      status: 1,
+      status: 0,
       name: "",
       todo_list_id: this.data.id,
       priority: 0,

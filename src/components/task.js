@@ -4,6 +4,7 @@ export default class Task {
       throw new Error(`"$container undefined", nowhere no mount!`);
     else this.$container = $container;
     this.data = taskData;
+    console.dir(this.data);
   }
 
   mount() {
@@ -14,8 +15,8 @@ export default class Task {
 
     this.$container.append(`
       <div id="task${id}" class="row m-auto border-top">
-        <div id="status" class="col-md-1 border-right d-flex align-items-center">
-          <i class="far fa-sticky-note mx-auto font-15"></i>
+        <div id="status${id}" class="col-md-1 border-right d-flex align-items-center">
+          <i class="far fa-calendar mx-auto font-15 cursor-pointer"></i>
         </div>
         <div class="col-md m-0 border-left border-right overflow-hide d-flex align-items-center">
           <div id="iTaskName${id}" class="w-100 mx-0 break-words">${name}</div>
@@ -35,6 +36,10 @@ export default class Task {
         </div>
       </div>
     `);
+
+    if (this.data.status)
+      $(`#status${id} i`).toggleClass("fa-calendar fa-calendar-check");
+
     this.regEvents(id);
     this.drawIcons(id);
   }
@@ -57,9 +62,21 @@ export default class Task {
 
     $edTaskName.click(() => this.edTaskName(id));
 
-    $iTaskName.focusout(() => this.dbUpdTask(id));
+    $iTaskName.focusout(() => this.edTaskName(id));
 
     $(`#delTask${id}`).on("click", () => this.delTask(id));
+
+    $(`#status${id}`).on("click", () => this.statusToggle(id));
+  }
+
+  statusToggle(id) {
+    const $status = $(`#status${id} svg`);
+
+    $status.toggleClass("fa-calendar fa-calendar-check");
+
+    this.data.status ? this.data.status = 0: this.data.status = 1;
+
+    this.dbUpdTask(id);
   }
 
   async dbUpdTask(id) {
@@ -73,8 +90,6 @@ export default class Task {
         "content-type": "application/json"
       }
     };
-
-    $iTaskName.removeAttr("contenteditable");
 
     const res = await fetch("/updtask", options);
     if (res.status !== 200) {
@@ -104,9 +119,9 @@ export default class Task {
 
   edTaskName(id) {
     const $iTaskName = $(`#iTaskName${id}`);
-
-    if ($iTaskName.prop("contenteditable") !== "inherit") {
+    if ($iTaskName[0].attributes.contenteditable) {
       $iTaskName.removeAttr("contenteditable");
+      this.dbUpdTask(id);
     } else {
       $iTaskName.prop("contenteditable", true);
       $iTaskName.focus();
@@ -195,6 +210,7 @@ export default class Task {
     $(`#edTaskName${id}`).off();
     $(`#iTaskName${id}`).off();
     $(`#delTask${id}`).off();
+    $(`#status${id}`).off();
 
     $(`#task${this.data.id}`).remove();
   }
