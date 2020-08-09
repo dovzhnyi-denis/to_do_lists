@@ -44,6 +44,7 @@ export default class Task {
     `);
 
     this.regEvents(id);
+    this.setStatus(id);
   }
 
   regEvents(id) {
@@ -65,6 +66,12 @@ export default class Task {
     $(`#delTask${id}`).on("click", () => this.delTask(id));
 
     $(`#status${id}`).on("click", () => this.statusToggle(id));
+  }
+
+  setStatus(id) {
+    console.log(this.data.status);
+    if (this.data.status)
+      $(`#status${id} i`).toggleClass("fa-calendar fa-calendar-check");
   }
 
   statusToggle(id) {
