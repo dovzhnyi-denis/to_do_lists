@@ -20,7 +20,8 @@ export default class Task {
         <div class="col-md m-0 border-left border-right overflow-hide d-flex align-items-center">
           <div id="iTaskName${id}" class="w-100 mx-0 break-words">${name}</div>
         </div>
-        <div class="col-1 m-auto d-flex justify-content-center">
+        <div id="taskBtns${id}" class="col-md-3 m-auto d-flex justify-content-center">
+        <div class="m-auto d-flex justify-content-center">
           <dov class="d-flex flex-column justify-content-center align-items-center">
 
             <svg id="prioInc${id}" height="8" width="14">
@@ -34,14 +35,28 @@ export default class Task {
             </svg>
           </dov>
         </div>
-        <div id="edTaskName${id}" class="col-1 m-auto text-center">
+        <div>
+          <svg height="14" width="6">
+            <polygon points="3,0 3,14" style="stroke:#6c757d;stroke-width:1;"/>
+          </svg>
+        </div>
+        <div id="edTaskName${id}" class="m-auto text-center">
           <i class="fas fa-pen cursor-pointer"></i>
         </div>
-        <div id="delTask${id}" class="col-1 m-auto text-center">
+        <div>
+          <svg height="14" width="6">
+            <polygon points="3,0 3,14" style="stroke:#6c757d;stroke-width:1;"/>
+          </svg>
+        </div>
+        <div id="delTask${id}" class="m-auto text-center">
           <i class="far fa-trash-alt cursor-pointer"></i> 
+        </div>
         </div>
       </div>
     `);
+
+    $(`#taskBtns${id}`).find("svg").toggle(); 
+    $(`#taskBtns${id}`).find("i").toggle();
 
     this.regEvents(id);
     this.setStatus(id);
@@ -54,6 +69,9 @@ export default class Task {
     const $iTaskName = $(`#iTaskName${id}`);
     const dec = +1;
     const inc = -1;
+
+    $(`#task${id}`).on("mouseenter", () => this.taskBtns(id));
+    $(`#task${id}`).on("mouseleave", () => this.taskBtns(id));
 
     $prioInc.on("click", () => this.data.changePrio(id, inc));
 
@@ -68,8 +86,11 @@ export default class Task {
     $(`#status${id}`).on("click", () => this.statusToggle(id));
   }
 
+  taskBtns(id) {
+    $(`#taskBtns${id}`).find("svg").toggle();
+  }
+
   setStatus(id) {
-    console.log(this.data.status);
     if (this.data.status)
       $(`#status${id} i`).toggleClass("fa-calendar fa-calendar-check");
   }
