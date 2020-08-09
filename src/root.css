@@ -168,3 +168,15 @@ html {
 .resize-no {
   resize: none;
 }
+
+.ico-fill-darkgray {
+  fill: #6c757d;
+  stroke: #6c757d;
+  stroke-width: 1;
+}
+
+.ico-fill-darkgray:hover {
+  fill: #1ecbe1;
+  stroke: #6c757d;
+  stroke-width: 1;
+}

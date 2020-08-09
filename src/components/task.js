@@ -4,7 +4,6 @@ export default class Task {
       throw new Error(`"$container undefined", nowhere no mount!`);
     else this.$container = $container;
     this.data = taskData;
-    console.dir(this.data);
   }
 
   mount() {
@@ -23,9 +22,16 @@ export default class Task {
         </div>
         <div class="col-1 m-auto d-flex justify-content-center">
           <dov class="d-flex flex-column justify-content-center align-items-center">
-            <canvas id="prioInc${id}" class="prio cursor-pointer" width="14" height="8"></canvas>
-            <canvas id="incDecSeparator${id}" width="18" height="6"></canvas>
-            <canvas id="prioDec${id}" class="prio cursor-pointer" width="14" height="8"></canvas>
+
+            <svg id="prioInc${id}" height="8" width="14">
+              <polygon class="ico-fill-darkgray cursor-pointer" points="0,8 7,0, 14,8"/>
+            </svg>
+            <svg height="6" width="18">
+              <polygon points="0,3 18,3" style="stroke:#6c757d;stroke-width:1;"/>
+            </svg>
+            <svg id="prioDec${id}" height="8" width="14">
+              <polygon class="ico-fill-darkgray cursor-pointer" points="0,0 7,8, 14,0"/>
+            </svg>
           </dov>
         </div>
         <div id="edTaskName${id}" class="col-1 m-auto text-center">
@@ -37,11 +43,7 @@ export default class Task {
       </div>
     `);
 
-    if (this.data.status)
-      $(`#status${id} i`).toggleClass("fa-calendar fa-calendar-check");
-
     this.regEvents(id);
-    this.drawIcons(id);
   }
 
   regEvents(id) {
@@ -52,12 +54,8 @@ export default class Task {
     const dec = +1;
     const inc = -1;
 
-    $prioInc.on("mouseenter", () => this.prioIncHover(id));
-    $prioInc.on("mouseleave", () => this.prioInc(id));
     $prioInc.on("click", () => this.data.changePrio(id, inc));
 
-    $prioDec.on("mouseenter", () => this.prioDecHover(id));
-    $prioDec.on("mouseleave", () => this.prioDec(id));
     $prioDec.on("click", () => this.data.changePrio(id, dec));
 
     $edTaskName.click(() => this.edTaskName(id));
@@ -126,80 +124,6 @@ export default class Task {
       $iTaskName.prop("contenteditable", true);
       $iTaskName.focus();
     }
-  }
-
-  drawIcons(id) {
-    this.prioInc(id);
-    this.prioDec(id);
-    this.prioBtnSeparator(id);
-  }
-
-  prioBtnSeparator(id) {
-    const ctx = document.querySelector(`#incDecSeparator${id}`).getContext("2d");
-
-    ctx.moveTo(0,3);
-    ctx.lineTo(18,3);
-
-    ctx.strokeStyle = "#6c757d";
-    ctx.stroke();
-  }
-
-  prioDec(id) {
-    const ctx = document.querySelector(`#prioDec${id}`).getContext("2d");
-
-    ctx.moveTo(0,0);
-    ctx.lineTo(7,8);
-    ctx.lineTo(14,0);
-    ctx.closePath();
-
-    ctx.strokeStyle = "transparent";
-    ctx.stroke();
-
-    ctx.fillStyle = "#6c757d";
-    ctx.fill();
-  }
-
-  prioInc(id) {
-    const ctx = document.querySelector(`#prioInc${id}`).getContext("2d");
-    ctx.moveTo(0,8);
-    ctx.lineTo(7,0);
-    ctx.lineTo(14,8);
-    ctx.closePath();
-
-    ctx.strokeStyle = "transparent";
-    ctx.stroke();
-
-    ctx.fillStyle = "#6c757d";
-    ctx.fill();
-  }
-
-  prioDecHover(id) {
-    const ctx = document.querySelector(`#prioDec${id}`).getContext("2d");
-
-    ctx.moveTo(0,0);
-    ctx.lineTo(7,8);
-    ctx.lineTo(14,0);
-    ctx.closePath();
-
-    ctx.strokeStyle = "transparent";
-    ctx.stroke();
-
-    ctx.fillStyle = "#1ecbe1";
-    ctx.fill();
-  }
-
-  prioIncHover(id) {
-    const ctx = document.querySelector(`#prioInc${id}`).getContext("2d");
-    ctx.moveTo(0,8);
-    ctx.lineTo(7,0);
-    ctx.lineTo(14,8);
-    ctx.closePath();
-
-    ctx.strokeStyle = "transparent";
-    ctx.stroke();
-
-    ctx.fillStyle = "#1ecbe1";
-    ctx.fill();
   }
 
   unmount() {

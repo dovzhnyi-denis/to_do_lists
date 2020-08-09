@@ -145,6 +145,8 @@ exports.db = {
           
           srvRes.status(s).json(auth);
           }));
+        } else {
+          srvRes.status(401).json({message: "User does not exist"});
         }
       });
 
