@@ -140,6 +140,7 @@ html {
   color: transparent;
   text-shadow: -1px 1px 0px rgba(255,255,255,0.9);
   background-clip: text;
+  -webkit-background-clip: text;
 }
 
 .pressed-plus {
@@ -147,6 +148,7 @@ html {
   color: transparent;
   text-shadow: 0px 2px 1px #2f476d;
   background-clip: text;
+  -webkit-background-clip: text;
 }
 
 .width-100 {
@@ -179,7 +181,4 @@ html {
   fill: #1ecbe1;
   stroke: #6c757d;
   stroke-width: 1;
-}
-
-.toggle-hidden {
 }
