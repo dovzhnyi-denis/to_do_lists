@@ -45,7 +45,7 @@ export default class List{
 
     this.$container.append(`
       <div id="todoList${id}" class="card mx-auto mb-3 w-75 bg-transp no-border">
-        <div class="row w-100 m-auto p-2 d-flex align-items-center bg-grad-0 border-dark-blue font-15">
+        <div id="listBar${id}" class="row w-100 m-auto p-2 d-flex align-items-center bg-grad-0 border-dark-blue font-15">
           <div class="col-md-1 text-center">
             <i class="fas fa-clipboard-list font-20"></i>
           </div>
@@ -77,7 +77,10 @@ export default class List{
         </div>
       </div>
     `);
-    
+   
+    $(`#edName${id}`).toggle();
+    $(`#trashBtn${id}`).toggle();
+
     this.regEvents(id);
     this.getTasks(id);
   }
@@ -88,14 +91,25 @@ export default class List{
       if(e.which === 13) // "Enter" key
         this.edName(id);
     });
+
+    $(`#listBar${id}`).on("mouseenter", () => this.toggleListTools(id));
+    $(`#listBar${id}`).on("mouseleave", () => this.toggleListTools(id));
+
     $(`#iListName${id}`).focusout(() => this.dbUpdListName(id));
 
     $(`#trashBtn${id}`).on("click", () => this.dbRemoveList(id));
+
     $(`#addTask${id}`).on("click", () => this.addTask(id));
+
     $(`#iNewTask${id}`).on("keypress", (e) => {
       if(e.which === 13) // "Enter" key
         this.addTask(id);
     });
+  }
+
+  toggleListTools(id) {
+    $(`#edName${id}`).toggle();
+    $(`#trashBtn${id}`).toggle();
   }
 
   refreshList() {
@@ -236,6 +250,7 @@ export default class List{
     $(`#trashBtn${id}`).off();
     $(`#addTask${id}`).off();
     $(`#iNewTask${id}`).off();
+    $(`#listBar${id}`).off();
 
     $(`#todoList${id}`).remove();
   }
