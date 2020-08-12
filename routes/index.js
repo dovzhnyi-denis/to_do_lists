@@ -29,7 +29,6 @@ router.get("/profile", auth, (req, res) => {
 });
 
 router.post("/insertlist", auth, (req, res) => {
-  if (!req.body) req.status(400).json({message: "unable to insert new to do list, body is empty"});
   req.body.userId = req.session.userId;
   db.insertList(req.body, res);  
 });

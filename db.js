@@ -8,7 +8,8 @@ const pool = mysql.createPool({
   port: 3306,
   user: "uo98b4nxwmrwrsgj",
   password: "D5yjwLdtKaOlWMyPAVyq",
-  database: "bsisi1zyljeinyiuwh3y"
+  database: "bsisi1zyljeinyiuwh3y",
+  multipleStatements: true
 });
 
 function errHandler(cb) {
@@ -177,13 +178,17 @@ exports.db = {
 
   insertList(listData, srvRes) {
     try {
-      const { name, id, userId } = listData;      
-      const sql = `INSERT INTO todo_lists (id, name, user_id) VALUES ('${id}', '${name}', '${userId}')`;
-
-      pool.query(sql, (err, res) => {
-        if (err) throw err;
-        srvRes.status(201).json({});
-      })
+      const { name, id, userId } = listData;
+      if (!name || !id) throw new Error({message:"insertList: one or more values are undefined"});
+      
+      validUserId(userId, srvRes, () => {
+        const sql = `INSERT INTO todo_lists (id, name, user_id) VALUES ('${id}', '${name}', '${userId}')`;
+  
+        pool.query(sql, (err, res) => {
+          if (err) throw err;
+          srvRes.status(201).json({});
+        });
+      });
     } catch (err) {
       srvRes.status(500).json(err);
     }
@@ -212,7 +217,9 @@ exports.db = {
   removeList(userId, listData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const sql = `DELETE FROM todo_lists where id = '${listData.id}'`;
+      if (!listData.id) throw new Error({message:"removeList: one or more values are undefined"});
+
+        const sql = `DELETE FROM todo_lists WHERE id = '${listData.id}'; DELETE FROM tasks WHERE todo_list_id = '${listData.id}';`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -239,7 +246,7 @@ exports.db = {
   
         pool.query(sql, (err, res) => {
           if (err) throw err;
-          srvRes.status(201).json({message: "task inserted"});
+          srvRes.status(201).json({});
         });
       });
     } catch (err) {

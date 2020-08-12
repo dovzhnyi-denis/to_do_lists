@@ -97,7 +97,7 @@ export default class List{
 
     $(`#iListName${id}`).focusout(() => this.dbUpdListName(id));
 
-    $(`#trashBtn${id}`).on("click", () => this.dbRemoveList(id));
+    $(`#trashBtn${id}`).on("click", () => this.removeList(id));
 
     $(`#addTask${id}`).on("click", () => this.addTask(id));
 
@@ -185,12 +185,12 @@ export default class List{
       this.tasks[this.tasks.length - 1].mount();
       $iNewTask.prop("placeholder", "Start typing here to create new task")
           .val("");
-      if (!(await this.dbInsertTask(taskData)))
+      if (!(await this.insertTask(taskData)))
         $(`err${id}`).text("Database error. Unable to insert task.");
     }
   }
 
-  async dbInsertTask(task) {
+  async insertTask(task) {
     const options = {
       method: "post",
       body: JSON.stringify(task),
@@ -255,7 +255,7 @@ export default class List{
     $(`#todoList${id}`).remove();
   }
 
-  async dbRemoveList(id) {
+  async removeList(id) {
     const options = {
       method: "post",
       body: JSON.stringify({id}),
@@ -263,16 +263,15 @@ export default class List{
         "content-type": "application/json"
       }
     };
+
+    this.unmount();
+
     const res = await fetch("/removelist", options);
-    // reset error field
-    $(`err${id}`).text();
 
     if (res.status !== 200) {
       const err = await res.json();
       $(`err${id}`).text(err.message);
       throw err;
     }
-
-    this.unmount();
   }
 }

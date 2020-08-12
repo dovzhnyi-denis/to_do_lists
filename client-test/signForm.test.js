@@ -16,7 +16,7 @@ export default function signFormTest() {
       $confPass,
       $uName,
       $pass,
-      $cPass,
+      $iConfPass,
       $err;
 
     beforeEach(() => {
@@ -28,7 +28,7 @@ export default function signFormTest() {
       $confPass = $("#confirmPass"),
       $uName = $("#userName"),
       $pass = $("#pass"),
-      $cPass = $("#confirmPass"),
+      $iConfPass = $("#iConfirmPass"),
       $err = $("#error");
     });
 
@@ -66,13 +66,13 @@ export default function signFormTest() {
 
       iFieldTest($uName);
       iFieldTest($pass);
-      iFieldTest($cPass);
+      iFieldTest($iConfPass);
     });
 
     it("not matching passwords should produce an error", () => {
       $uName.val(name);
       $pass.val(pass);
-      $cPass.val(`${pass}q`);
+      $iConfPass.val(`${pass}q`);
       $signup.trigger("click");
 
       expect($err.text()).to.equal("Passwords do not match.");
@@ -88,17 +88,17 @@ export default function signFormTest() {
         $err.text("");
         $uName.val("");
         $pass.val("");
-        $cPass.val("");
+        $iConfPass.val("");
       }
 
       $uName.val(`${name}${name}1`);
       $pass.val(pass);
-      $cPass.val(pass);
+      $iConfPass.val(pass);
       testIFields(1);
 
       $uName.val(pass);
       $pass.val(`${name}${name}1`);
-      $cPass.val(`${name}${name}1`);
+      $iConfPass.val(`${name}${name}1`);
       testIFields(1);
 
       $uName.val(`${name}${name}1`);
