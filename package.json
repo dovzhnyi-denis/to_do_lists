@@ -7,7 +7,7 @@
     "build": "webpack -p",
     "watch": "webpack --watch",
     "build-test": "webpack -dw --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
-    "test": "nyc --reporter=text mocha",
+    "test": "nyc --reporter=text mocha --timeout 3000",
     "start": "node app.js"
   },
   "author": "Denys Dovzhnyi",

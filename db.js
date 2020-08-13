@@ -12,16 +12,6 @@ const pool = mysql.createPool({
   multipleStatements: true
 });
 
-function errHandler(cb) {
-  return (err, result) => {
-    try {
-      cb(err, result);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-}
-
 function initUsers() {
   pool.query("SELECT * FROM users", (err, res) => { 
     if (err) {
@@ -69,7 +59,7 @@ function insertUser(name, pass, srvRes, session){
     const sql = `INSERT INTO users (id, name, password) VALUES ("${id}", "${name}", "${hash}")`;
     pool.query(sql, (err, res) => {
       if (err) throw err;
-      srvRes.status(201).json({message: "User created"});
+      srvRes.status(201).json({});
     });
   });
 }
@@ -90,14 +80,18 @@ function validUserId(userId, srvRes, cb) {
 
 exports.db = {
   init(){
-      errHandler(initUsers());
-      errHandler(initLists());
-      errHandler(initTasks());
+    try {
+      initUsers();
+      initLists();
+      initTasks();
+    } catch(err) {
+      console.log(err);
+    }
   },
 
   signUp(user, srvRes, session) {
     try {
-      if (!user) throw new Error("signUp: user is undefined!");
+
 
       const { name, pass } = user;
       
@@ -119,38 +113,30 @@ exports.db = {
 
   signIn(user, srvRes, session){
     try {
-      if (!user) throw new Error("signin: user is undefined!");
+      if (!user || !user.name || !user.pass) throw new Error("signIn: one or more values are undefined");
 
       const { name, pass } = user;
-      const sql = `SELECT id, name, password FROM users`;
+      const sql = `SELECT * FROM users WHERE name = '${name}'`;
 
       pool.query(sql, (err, res) => {
         if (err) throw err;
-        
-        const userExists = res.find(u =>
-          u.name === name
-        );
-        let auth = {message: "User does not exist"},
-          s = 401;
 
-        if (userExists) {
-          bcrypt.compare(pass, userExists.password, errHandler((err, result) => {
+        if (res.length > 0) {
+          const userExists = res[0];
+          bcrypt.compare(pass, userExists.password, (err, result) => {
             if (err) throw err;
 
             if (result) {
-              auth = {message: "Signed in"};
-              s = 200;
               // create session
               session.userId = userExists.id;
-            } else auth = {message: "Incorrect password"};
-          
-          srvRes.status(s).json(auth);
-          }));
+
+              srvRes.status(200).json({});
+            } else srvRes.status(401).json({message: "Incorrect password"});
+          });
         } else {
           srvRes.status(401).json({message: "User does not exist"});
         }
       });
-
     } catch (err) {
       console.log(err);
       srvRes.status(500).json({message: "database error"});
@@ -176,9 +162,9 @@ exports.db = {
     }
   },
 
-  insertList(listData, srvRes) {
+  insertList(userId, listData, srvRes) {
     try {
-      const { name, id, userId } = listData;
+      const { name, id } = listData;
       if (!name || !id) throw new Error({message:"insertList: one or more values are undefined"});
       
       validUserId(userId, srvRes, () => {
@@ -194,7 +180,7 @@ exports.db = {
     }
   },
 
-  updateListName(userId, listData, srvRes) {
+  updateList(userId, listData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
         const { id,
@@ -238,11 +224,12 @@ exports.db = {
       validUserId(userId, srvRes, () => {
         const { id,
           name,
-          todo_list_id,
+          listId,
           priority,
           status
         } = taskData;
-        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${todo_list_id}', '${priority}')`;
+        console.dir(taskData);
+        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${listId}', '${priority}')`;
   
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -285,7 +272,7 @@ exports.db = {
         pool.query(sql, (err, res) => {
           if (err) throw err;
 
-          srvRes.status(200).json({message: "task name updated"});
+          srvRes.status(200).json({});
         });
       });
     } catch (err) {
@@ -294,16 +281,16 @@ exports.db = {
     }
   },
 
-  remTask(userId, taskData, srvRes) {
+  removeTask(userId, taskData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const { id } = taskData;
-        const sql = `DELETE FROM tasks WHERE id = '${id}'`;
+        const { taskId } = taskData;
+        const sql = `DELETE FROM tasks WHERE id = '${taskId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
 
-          srvRes.status(200).json({message: "task entry removed"});
+          srvRes.status(200).json({});
         });
       });
     } catch (err) {

@@ -123,7 +123,7 @@ export default class List{
   async getTasks(id) {
     const options = {
       method: "post",
-      body: JSON.stringify({todoListId: id}),
+      body: JSON.stringify({listId: id}),
       headers: {
         "content-type": "application/json"
       }
@@ -167,7 +167,7 @@ export default class List{
       id: new Date().getTime(),
       status: 0,
       name: "",
-      todo_list_id: this.data.id,
+      listId: this.data.id,
       priority: 0,
       changePrio: this.changePrio 
     };

@@ -28,13 +28,12 @@ router.get("/profile", auth, (req, res) => {
   db.profile(req.session.userId, res);
 });
 
-router.post("/insertlist", auth, (req, res) => {
-  req.body.userId = req.session.userId;
-  db.insertList(req.body, res);  
+router.post("/insertlist", auth, (req, res) => { 
+  db.insertList(req.session.userId, req.body, res);  
 });
 
-router.post("/updlistname", auth, (req, res) => {
-  db.updateListName(req.session.userId, req.body, res);
+router.post("/updlist", auth, (req, res) => {
+  db.updateList(req.session.userId, req.body, res);
 });
 
 router.post("/removelist", auth, (req, res) => {
@@ -46,7 +45,7 @@ router.post("/inserttask", auth, (req, res) => {
 });
 
 router.post("/gettasks", auth, (req, res) => {
-  db.getTasks(req.session.userId, req.body.todoListId, res);
+  db.getTasks(req.session.userId, req.body.listId, res);
 });
 
 router.post("/updtask", auth, (req, res) => {
@@ -54,7 +53,7 @@ router.post("/updtask", auth, (req, res) => {
 });
 
 router.post("/removetask", auth, (req, res) => {
-  db.remTask(req.session.userId, req.body, res);
+  db.removeTask(req.session.userId, req.body, res);
 });
 
 module.exports = router;

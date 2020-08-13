@@ -127,7 +127,7 @@ export default class Task {
   async delTask(id) {
     const options = {
       method: "post",
-      body: JSON.stringify({id}),
+      body: JSON.stringify({taskId: id}),
       headers: {
         "content-type": "application/json"
       }
