@@ -42,7 +42,7 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(255), status INT(1), todo_list_id BIGINT(15), priority BIGINT(2))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(255), status INT(1), todo_list_id BIGINT(15), priority BIGINT(2), deadline VARCHAR(10))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
         });
@@ -180,7 +180,7 @@ exports.db = {
     }
   },
 
-  updateList(userId, listData, srvRes) {
+  updList(userId, listData, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
         const { id,
@@ -245,7 +245,7 @@ exports.db = {
   getTasks(userId, listId, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const sql = `SELECT id, name, priority, status FROM tasks where todo_list_id = '${listId}'`;
+        const sql = `SELECT * FROM tasks where todo_list_id = '${listId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -265,9 +265,10 @@ exports.db = {
         const { id,
           name,
           priority,
-          status
+          status,
+          deadline
         } = taskData;
-        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}', status = '${status}' WHERE id = '${id}'`;
+        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}', status = '${status}', deadline = '${deadline}' WHERE id = '${id}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;

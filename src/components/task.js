@@ -20,6 +20,11 @@ export default class Task {
         <div class="col-md m-0 border-left border-right overflow-hide d-flex align-items-center">
           <div id="iTaskName${id}" class="w-100 mx-0 break-words">${name}</div>
         </div>
+        <div class="col-md-2 m-auto text-center border-right bg-transp">
+          <div class="d-flex flex-column justify-content-center align-content-center">
+            <input id="deadline${id}" class="h-75 w-100 no-border text-center date" type="date">
+          </div>
+        </div>
         <div id="taskBtns${id}" class="col-md-3 m-auto d-flex justify-content-center">
         <div class="m-auto d-flex justify-content-center">
           <dov class="d-flex flex-column justify-content-center align-items-center">
@@ -59,7 +64,7 @@ export default class Task {
     $(`#taskBtns${id}`).find("i").toggle();
 
     this.regEvents(id);
-    this.setStatus(id);
+    this.init(id);
   }
 
   regEvents(id) {
@@ -84,13 +89,34 @@ export default class Task {
     $(`#delTask${id}`).on("click", () => this.delTask(id));
 
     $(`#status${id}`).on("click", () => this.statusToggle(id));
+
+    $(`#deadline${id}`).on("change", () => this.deadline(id));
+  }
+
+  deadline(id) {
+    this.data.deadline = $(`#deadline${id}`).val();
+    // if current date had reached or passed deadline - set task status as completed
+    const deadline = new Date(this.data.deadline).getTime();
+    const curDate = new Date().getTime();
+    if (curDate >= deadline) {
+      this.data.status = 1;
+      $(`#status${id} svg`).removeClass("fa-calendar")
+        .addClass("fa-calendar-check");
+    } else {
+      this.data.status = 0;
+      $(`#status${id} svg`).removeClass("fa-calendar-check")
+        .addClass("fa-calendar");
+    }
+    this.updTask(id);
   }
 
   taskBtns(id) {
     $(`#taskBtns${id}`).find("svg").toggle();
   }
 
-  setStatus(id) {
+  init(id) {
+    if (this.data.deadline)
+      $(`#deadline${id}`).val(this.data.deadline);
     if (this.data.status)
       $(`#status${id} i`).toggleClass("fa-calendar fa-calendar-check");
   }
@@ -102,10 +128,10 @@ export default class Task {
 
     this.data.status ? this.data.status = 0: this.data.status = 1;
 
-    this.dbUpdTask(id);
+    this.updTask(id);
   }
 
-  async dbUpdTask(id) {
+  async updTask(id) {
     const $iTaskName = $(`#iTaskName${id}`);
     this.data.name = $iTaskName.text();
     const taskData = this.data;
@@ -147,7 +173,7 @@ export default class Task {
     const $iTaskName = $(`#iTaskName${id}`);
     if ($iTaskName[0].attributes.contenteditable) {
       $iTaskName.removeAttr("contenteditable");
-      this.dbUpdTask(id);
+      this.updTask(id);
     } else {
       $iTaskName.prop("contenteditable", true);
       $iTaskName.focus();
@@ -163,6 +189,7 @@ export default class Task {
     $(`#iTaskName${id}`).off();
     $(`#delTask${id}`).off();
     $(`#status${id}`).off();
+    $(`#deadline${id}`).off();
 
     $(`#task${this.data.id}`).remove();
   }

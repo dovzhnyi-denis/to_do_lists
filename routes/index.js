@@ -33,7 +33,7 @@ router.post("/insertlist", auth, (req, res) => {
 });
 
 router.post("/updlist", auth, (req, res) => {
-  db.updateList(req.session.userId, req.body, res);
+  db.updList(req.session.userId, req.body, res);
 });
 
 router.post("/removelist", auth, (req, res) => {

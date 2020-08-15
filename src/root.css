@@ -182,3 +182,8 @@ html {
   stroke: #6c757d;
   stroke-width: 1;
 }
+
+.date {
+  background-color: transparent;
+  font-size: .75rem;
+}

@@ -169,7 +169,8 @@ export default class List{
       name: "",
       listId: this.data.id,
       priority: 0,
-      changePrio: this.changePrio 
+      changePrio: this.changePrio,
+      deadline: null
     };
     // reset error field
     $(`err${id}`).text();
@@ -185,12 +186,12 @@ export default class List{
       this.tasks[this.tasks.length - 1].mount();
       $iNewTask.prop("placeholder", "Start typing here to create new task")
           .val("");
-      if (!(await this.insertTask(taskData)))
+      if (!(await this.dbInsertTask(taskData)))
         $(`err${id}`).text("Database error. Unable to insert task.");
     }
   }
 
-  async insertTask(task) {
+  async dbInsertTask(task) {
     const options = {
       method: "post",
       body: JSON.stringify(task),
