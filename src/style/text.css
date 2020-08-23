@@ -1,0 +1,38 @@
+.break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.pressed-text {
+  color: transparent;
+  text-shadow: -1px 1px 0px rgba(255,255,255,0.9);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.pressed-plus {
+  background-color: #000;
+  color: transparent;
+  text-shadow: 0px 2px 1px #2f476d;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.font-7 {
+  font-size: .7rem;
+}
+
+.font-10 {
+  font-size: 1rem;
+}
+
+.font-15 {
+  font-size: 1.5rem;
+}
+
+.font-20 {
+  font-size: 2rem;
+}

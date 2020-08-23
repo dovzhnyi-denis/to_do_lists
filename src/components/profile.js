@@ -1,11 +1,34 @@
-import List from "./list";
+import todoList from "./todoList";
 
 export default class Profile {
   constructor($container) {
     if (!$container)
       throw new Error(`"$container undefined", nowhere no mount!`);
     else this.$container = $container;
+    
     this.toDo = [];
+
+    this.moveTask = (oldListId, newListId, taskId) => {
+      const oldList = this.toDo.find(td => td.data.id === oldListId);
+      const newList = this.toDo.find(td => td.data.id === newListId);
+      const task = oldList.tasks.find(t => t.data.id === taskId);
+      
+      oldList.tasks = oldList.tasks.filter(t => t.data.id !== taskId);
+      newList.tasks.push(task);
+
+      task.$container = $(`#tasks${newListId}`);
+      // bind changePrio method to new todo list      
+      task.data.changePrio = newList.changePrio;
+      // set task priority at the bottom of the new list
+      task.data.priority = newList.tasks.length - 1;
+      
+      task.data.listId = newListId;
+
+      newList.sortTasks();
+
+      oldList.refreshList(oldListId);
+      newList.refreshList(newListId);
+    };
   }
 
   mount(router, profData) {
@@ -53,9 +76,12 @@ export default class Profile {
   showTodoLists(profData) {
     const $todo = $("#todoContainer");
 
-    profData.forEach(td =>
-      this.toDo.push(new List($todo, td))
-    );
+    profData.forEach(td => {
+      // add method references to each todo list object here
+      td.moveTask = this.moveTask;
+
+      this.toDo.push(new todoList($todo, td));
+    });
 
     this.toDo.forEach(td => td.mount());
   }
@@ -67,7 +93,7 @@ export default class Profile {
       id: new Date().getTime(),
     };
 
-    this.toDo.push(new List($todo, listData));
+    this.toDo.push(new todoList($todo, listData));
     this.toDo[this.toDo.length - 1].mount();
 
     const options = {

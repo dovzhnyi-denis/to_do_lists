@@ -1,7 +1,14 @@
 import SignForm from "./components/signForm";
 import Profile from "./components/profile";
+
 import "./lib/fontawesome-all.min";
-import "./root.css";
+
+import "./style/main.css";
+import "./style/background.css";
+import "./style/borders.css";
+import "./style/text.css";
+import "./style/svg.css";
+import "./style/dropdowns.css";
 
 $().ready(async () => {
   try {

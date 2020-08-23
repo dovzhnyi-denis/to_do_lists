@@ -14,15 +14,22 @@ export default class Task {
 
     this.$container.append(`
       <div id="task${id}" class="row m-auto border-top">
-        <div id="status${id}" class="col-md-1 border-right d-flex align-items-center">
-          <i class="far fa-calendar mx-auto font-15 cursor-pointer"></i>
+        <div class="col-md-1 border-right d-flex justify-content-between align-items-center">
+          <svg id="changeListBtn${id}" class="bg-light-blue-1 border-dark-blue cursor-pointer" width="20" height="24" >
+            <path class="ico-fill-white" d="M12 2 L4 12 L12 20"/>
+          </svg>
+          <ul id="changeList${id}" class="p-1 text-white font-7 drop-left-items bg-dark-blue-1 display-no">
+          </ul>
+          <div id="status${id}">
+            <i class="far fa-calendar mx-auto font-15 cursor-pointer"></i>
+          </div>
         </div>
         <div class="col-md m-0 border-left border-right overflow-hide d-flex align-items-center">
           <div id="iTaskName${id}" class="w-100 mx-0 break-words">${name}</div>
         </div>
         <div class="col-md-2 m-auto text-center border-right bg-transp">
           <div class="d-flex flex-column justify-content-center align-content-center">
-            <input id="deadline${id}" class="h-75 w-100 no-border text-center date" type="date">
+            <input id="deadline${id}" class="h-75 w-100 no-border bg-transparent text-center date" type="date">
           </div>
         </div>
         <div id="taskBtns${id}" class="col-md-3 m-auto d-flex justify-content-center">
@@ -63,8 +70,8 @@ export default class Task {
     $(`#taskBtns${id}`).find("svg").toggle(); 
     $(`#taskBtns${id}`).find("i").toggle();
 
-    this.regEvents(id);
     this.init(id);
+    this.regEvents(id);
   }
 
   regEvents(id) {
@@ -91,6 +98,53 @@ export default class Task {
     $(`#status${id}`).on("click", () => this.statusToggle(id));
 
     $(`#deadline${id}`).on("change", () => this.deadline(id));
+
+    $(`#changeListBtn${id}`).on("click", () => this.showChangeList(id));
+    $(`#changeList${id}`).on("mouseleave", () => this.hideChangeList(id));
+  }
+
+  showChangeList(taskId) {
+    const $changeList = $(`#changeList${taskId}`);
+    
+    if ($changeList.css('display') !== 'none') {
+      this.hideChangeList(taskId);
+      return;
+    }
+
+    const $todoLists = $(`#todoContainer`).children();
+
+    for (let t of $todoLists) {
+      const listId = +t.attributes.id.nodeValue.match(/\d+/g)[0];
+      const listName = $(`#iListName${listId}`).val();
+
+      $changeList.append(`<li id="moveToList${listId}" class="text-truncate cursor-pointer">${listName}</li>`);
+      // register event for each <li> element
+      $(`#moveToList${listId}`).on("click", () => {
+        let oldListId = this.data.listId;
+
+        this.data.moveTask(oldListId, listId, taskId);
+
+        this.updTask(taskId);
+      });
+    }
+
+    $changeList.show(); 
+  }
+
+  hideChangeList(id) {
+    const $changeList = $(`#changeList${id}`);
+
+    $changeList.hide();
+    // if $changeList container isn't empty, unregister events and remove children
+    if ($changeList.children().length > 0) {
+      for (let t of $changeList.children()) {
+        const id = t.attributes.id.nodeValue.match(/\d+/g)[0];
+        const $moveToList = $(`#moveToList${id}`);
+        
+        $moveToList.off();
+        $moveToList.remove();
+      }
+    }
   }
 
   deadline(id) {
@@ -190,6 +244,8 @@ export default class Task {
     $(`#delTask${id}`).off();
     $(`#status${id}`).off();
     $(`#deadline${id}`).off();
+    $(`#changeListBtn${id}`).off();
+    $(`#changeList${id}`).off();
 
     $(`#task${this.data.id}`).remove();
   }

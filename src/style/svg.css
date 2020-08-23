@@ -1,0 +1,18 @@
+.ico-fill-darkgray {
+  fill: #6c757d;
+  stroke: #6c757d;
+  stroke-width: 1;
+}
+
+.ico-fill-white {
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 1;
+}
+
+.ico-fill-darkgray:hover, .ico-fill-white:hover,
+  .bg-light-blue-1:hover .ico-fill-white {
+  fill: #1ecbe1;
+  stroke: #6c757d;
+  stroke-width: 1;
+}

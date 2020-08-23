@@ -42,7 +42,7 @@ function initTasks(){
   pool.query("SELECT * FROM tasks", (err, res) => {
     if (err) {
       if (err.code === "ER_NO_SUCH_TABLE") {
-        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(255), status INT(1), todo_list_id BIGINT(15), priority BIGINT(2), deadline VARCHAR(10))";
+        const tasks = "CREATE TABLE tasks (id BIGINT(15), name VARCHAR(255), status INT(1), listId BIGINT(15), priority BIGINT(2), deadline VARCHAR(10))";
         pool.query(tasks, (err, res) => {
           if (err) throw err;
         });
@@ -205,7 +205,7 @@ exports.db = {
       validUserId(userId, srvRes, () => {
       if (!listData.id) throw new Error({message:"removeList: one or more values are undefined"});
 
-        const sql = `DELETE FROM todo_lists WHERE id = '${listData.id}'; DELETE FROM tasks WHERE todo_list_id = '${listData.id}';`;
+        const sql = `DELETE FROM todo_lists WHERE id = '${listData.id}'; DELETE FROM tasks WHERE listId = '${listData.id}';`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -228,8 +228,7 @@ exports.db = {
           priority,
           status
         } = taskData;
-        console.dir(taskData);
-        const sql = `INSERT INTO tasks (id, name, status, todo_list_id, priority) VALUES ('${id}', '${name}', '${status}', '${listId}', '${priority}')`;
+        const sql = `INSERT INTO tasks (id, name, status, listId, priority) VALUES ('${id}', '${name}', '${status}', '${listId}', '${priority}')`;
   
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -237,15 +236,15 @@ exports.db = {
         });
       });
     } catch (err) {
-      console.log(err)
-      srvRes.status(500).json({message: "database error"});
+        console.log(err)
+        srvRes.status(500).json({message: "database error"});
     }
   },
 
   getTasks(userId, listId, srvRes) {
     try {
       validUserId(userId, srvRes, () => {
-        const sql = `SELECT * FROM tasks where todo_list_id = '${listId}'`;
+        const sql = `SELECT * FROM tasks where listId = '${listId}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;
@@ -266,9 +265,10 @@ exports.db = {
           name,
           priority,
           status,
-          deadline
+          deadline,
+          listId
         } = taskData;
-        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}', status = '${status}', deadline = '${deadline}' WHERE id = '${id}'`;
+        const sql = `UPDATE tasks SET name = '${name}', priority = '${priority}', status = '${status}', deadline = '${deadline}', listId = '${listId}' WHERE id = '${id}'`;
 
         pool.query(sql, (err, res) => {
           if (err) throw err;

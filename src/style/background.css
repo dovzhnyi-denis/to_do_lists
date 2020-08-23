@@ -1,0 +1,41 @@
+.bg-main-gradient {
+  height: 100vh;
+  background-image: linear-gradient(#d6d0c3, #ad580d);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.bg-grad-0 {
+  background-image: linear-gradient(#8cafd2, #33588f);
+}
+
+.bg-grad-1 {
+  background-image: linear-gradient(#8ec4a7, #4d8364);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.bg-gray-1 {
+  background-color: #e0e0e0;
+}
+
+.bg-light-1 {
+  background-color: #e7e7e6;
+}
+
+.bg-light-blue-1 {
+  background-color: #6589b5;
+}
+
+.bg-dark-blue-1 {
+  background-color: #315589;
+}
+
+.bg-light-1:hover, .bg-light-1:hover .ico-fill-darkgray {
+  background-color: #ccccca;
+  fill: #1ecbe1;
+}
+
+.bg-transp {
+  background-color: transparent;
+}

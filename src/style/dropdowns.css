@@ -1,0 +1,35 @@
+.drop-left-items {
+  position: absolute;
+  left: -125px;
+  top: 0;
+  width: 120px;
+  text-align: center;
+  list-style-type: none;
+  overflow-y: auto;
+  text-overflow: ellipsis;
+}
+
+.drop-left-items li:hover {
+  background-color: #698db8;
+}
+
+@media only screen and (max-width: 950px) {
+  .drop-left-items {
+    left: -105px;
+    width: 100px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .drop-left-items {
+    left: -75px;
+    width: 70px;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .drop-left-items {
+    left: -55px;
+    width: 50px;
+  }
+}

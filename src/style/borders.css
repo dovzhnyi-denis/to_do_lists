@@ -1,0 +1,28 @@
+.border-dark-blue {
+  border: solid 1px #315589;
+}
+
+.border-green-dark {
+  border: 1px solid #447557;
+  border-radius: 4px;
+}
+
+.border-t-dark-grey {
+  border-top: 1px solid #707070;
+}
+
+.no-border {
+  border: none;
+}
+
+.border-top.m-auto:hover {
+  background-color: #fcfed5; 
+}
+
+.border-bot-round {
+  border-radius: 0 0 20px 20px;
+}
+
+.border-transparent {
+  border-color: transparent;
+}

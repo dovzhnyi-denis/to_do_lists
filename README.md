@@ -6,7 +6,7 @@
   <li>Clone repository with <code style="background:lightgrey">git clone https://github.com/dovzhnyi-denis/to_do_lists.git</code></li>
   <li>Enter project directory;</li>
   <li>Execute commands:
-  <ul>  
+  <ul> 
     <li><code style="background:lightgrey">npm i</code>;</li>
     <li><code style="background:lightgrey">npm run build</code>;</li>
     <li><code style="background:lightgrey">node app.js</code>.</li>
@@ -28,5 +28,6 @@
     <li>Clicking "Pen" icon makes task description editable.</li>
     <li>Clicking "Trash" icon removes task.</li>
   </ul>
-  <li>Task status and position will be stored in database.</li>
+  <li>User can set a deadline for each task. Task status will automaticaly update to show if task had reached it's deadline.</li>
+  <li>User can move task to a different "To Do List"</li>
 </ul>
