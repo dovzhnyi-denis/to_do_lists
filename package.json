@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack -p",
     "watch": "webpack --watch",
-    "build-test": "webpack -dw --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
+    "build-test": "webpack -d --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
+    "build-test-watch": "webpack -dw --entry ./client-test/all-tests.js -o ./client-test/testBundle.js",
     "test": "nyc --reporter=text mocha --timeout 3000",
     "start": "node app.js"
   },
