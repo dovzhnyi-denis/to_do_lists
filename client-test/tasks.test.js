@@ -21,6 +21,9 @@ export default function tasksTest() {
 
     beforeEach(() => {
       profile.mount(null, [listData]);
+
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
     });
 
     afterEach(() => {
@@ -29,9 +32,6 @@ export default function tasksTest() {
     });
  
     it("hovering mouse over task line should make task buttons visible (priority arrows, pen, trash bin)", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
-
       const taskId = profile.toDo[0].tasks[0].data.id;
       const $taskBtns = $(`#taskBtns${taskId}`).find("svg");
 
@@ -43,9 +43,6 @@ export default function tasksTest() {
     });
 
     it("clicking arrow up should move task position up in the task list", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
-
       $(`#iNewTask${list1Id}`).val(task2Name);
       $(`#addTask${list1Id}`).trigger("click");
 
@@ -57,9 +54,6 @@ export default function tasksTest() {
     });
 
     it("clicking arrow down should move task position down in the task list", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
-
       $(`#iNewTask${list1Id}`).val(task2Name);
       $(`#addTask${list1Id}`).trigger("click");
 
@@ -71,8 +65,6 @@ export default function tasksTest() {
     });
 
     it("clicking on pen button should make task name editable", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
 
       const taskId = profile.toDo[0].tasks[0].data.id;
 
@@ -82,9 +74,6 @@ export default function tasksTest() {
     });
 
     it("clicking on trash bin button should remove task", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
-
       const taskId = profile.toDo[0].tasks[0].data.id;
 
       $(`#delTask${taskId}`).trigger("click");
@@ -93,10 +82,7 @@ export default function tasksTest() {
       expect(profile.toDo[0].tasks.length).to.equal(0);
     });
 
-    it("clicking on status icon should toggle status", () => {
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
-
+    it("clicking on status icon should toggle status", () => { 
       const taskId = profile.toDo[0].tasks[0].data.id;
 
       $(`#status${taskId}`).trigger("click");
@@ -106,11 +92,7 @@ export default function tasksTest() {
 
     it("tasks can be moved between lists", () => {
       $("#addList").trigger("click");
-
       const list2Id = profile.toDo[1].data.id;
-
-      $(`#iNewTask${list1Id}`).val(task1Name);
-      $(`#addTask${list1Id}`).trigger("click");
 
       const taskId = profile.toDo[0].tasks[0].data.id;
       $(`#changeList${taskId}`).css("display", "none");
@@ -118,6 +100,15 @@ export default function tasksTest() {
       $(`#changeListBtn${taskId}`).trigger("click");
       $(`#moveToList${list2Id}`).trigger("click");
       expect(profile.toDo[1].tasks[0].data.listId).to.equal(list2Id);
+    });
+
+    it("task status should change to finished if current date is past deadline", () => {
+      const taskId = profile.toDo[0].tasks[0].data.id;
+
+      $(`#deadline${taskId}`)[0].valueAsDate = new Date();
+      $(`#deadline${taskId}`).trigger("change");
+
+      expect(profile.toDo[0].tasks[0].data.status).to.equal(1);
     });
   });
 }
