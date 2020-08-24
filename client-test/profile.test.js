@@ -6,11 +6,11 @@ export default function profileTest() {
     const $container = $("#root"),
       profile = new Profile($container);
 
-    beforeEach(() => {
+    before(() => {
       profile.mount(null, []);
     });
 
-    afterEach(() => {
+    after(() => {
       profile.unmount();
     });
    

@@ -55,7 +55,13 @@ export default class List{
     this.refreshList = (id = this.data.id) => {
       $(`#tasks${id}`).html("");
       this.tasks.forEach(t => t.mount());
-    }
+    };
+
+    this.todoDelTask = (id) => {
+      this.tasks = this.tasks.filter(t => 
+        t.data.id !== id
+      );
+    };
   }
 
   mount() {
@@ -118,7 +124,7 @@ export default class List{
 
     $(`#iListName${id}`).focusout(() => this.updListName(id));
 
-    $(`#trashBtn${id}`).on("click", () => this.removeList(id));
+    $(`#trashBtn${id}`).on("click", () => this.unmount(id));
 
     $(`#addTask${id}`).on("click", () => this.addTask(id));
 
@@ -152,6 +158,7 @@ export default class List{
       t.changePrio = this.changePrio;
       t.refreshList = this.refreshList;
       t.moveTask = this.data.moveTask;
+      t.todoDelTask = this.todoDelTask;
 
       this.tasks.push(new Task($tasks, t));
     });
@@ -173,7 +180,8 @@ export default class List{
       deadline: null,
       changePrio: this.changePrio,
       refreshList: this.refreshList,
-      moveTask: this.data.moveTask
+      moveTask: this.data.moveTask,
+      todoDelTask: this.todoDelTask
     };
     // reset error field
     $(`err${id}`).text();
@@ -257,6 +265,9 @@ export default class List{
     $(`#listBar${id}`).off();
 
     $(`#todoList${id}`).remove();
+
+    this.data.profDelList(id);
+    this.removeList(id);
   }
 
   async removeList(id) {
@@ -267,8 +278,6 @@ export default class List{
         "content-type": "application/json"
       }
     };
-
-    this.unmount();
 
     const res = await fetch("/removelist", options);
 

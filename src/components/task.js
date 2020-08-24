@@ -75,23 +75,19 @@ export default class Task {
   }
 
   regEvents(id) {
-    const $prioInc = $(`#prioInc${id}`);
-    const $prioDec = $(`#prioDec${id}`);
-    const $edTaskName = $(`#edTaskName${id}`);
-    const $iTaskName = $(`#iTaskName${id}`);
     const dec = +1;
     const inc = -1;
 
     $(`#task${id}`).on("mouseenter", () => this.taskBtns(id));
     $(`#task${id}`).on("mouseleave", () => this.taskBtns(id));
 
-    $prioInc.on("click", () => this.data.changePrio(id, inc));
+    $(`#prioInc${id}`).on("click", () => this.data.changePrio(id, inc));
 
-    $prioDec.on("click", () => this.data.changePrio(id, dec));
+    $(`#prioDec${id}`).on("click", () => this.data.changePrio(id, dec));
 
-    $edTaskName.click(() => this.edTaskName(id));
+    $(`#edTaskName${id}`).click(() => this.edTaskName(id));
 
-    $iTaskName.focusout(() => this.edTaskName(id));
+    $(`#iTaskName${id}`).focusout(() => this.edTaskName(id));
 
     $(`#delTask${id}`).on("click", () => this.delTask(id));
 
@@ -105,8 +101,8 @@ export default class Task {
 
   showChangeList(taskId) {
     const $changeList = $(`#changeList${taskId}`);
-    
-    if ($changeList.css('display') !== 'none') {
+
+    if ($changeList.css("display") === "block") {
       this.hideChangeList(taskId);
       return;
     }
@@ -248,5 +244,6 @@ export default class Task {
     $(`#changeList${id}`).off();
 
     $(`#task${this.data.id}`).remove();
+    this.data.todoDelTask(id);
   }
 }

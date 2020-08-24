@@ -1,7 +1,19 @@
-import rndStr from "../src/rnd_uft8_str";
 import SignForm from "../src/components/signForm";
 import Profile from "../src/components/profile";
 const expect = chai.expect;
+
+// helper function to generate random strings of desired length
+function rndStr(ln) {
+  let str = '';
+  while (str.length < ln) {
+    str += String.fromCharCode(utf8SymCodes());
+  }
+  return str;
+}
+// return random utf8 symbol code 
+function utf8SymCodes() {
+  return Math.floor(Math.random() * 10175) + 21;
+}
 
 export default function signFormTest() {
   describe("sign form", () => {

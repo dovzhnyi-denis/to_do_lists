@@ -29,6 +29,10 @@ export default class Profile {
       oldList.refreshList(oldListId);
       newList.refreshList(newListId);
     };
+
+    this.profDelList = (listId =>
+      this.toDo = this.toDo.filter(td => td.data.id !== listId)
+    );
   }
 
   mount(router, profData) {
@@ -79,6 +83,7 @@ export default class Profile {
     profData.forEach(td => {
       // add method references to each todo list object here
       td.moveTask = this.moveTask;
+      td.profDelList = this.profDelList;
 
       this.toDo.push(new todoList($todo, td));
     });
@@ -91,6 +96,8 @@ export default class Profile {
     const listData = {
       name: "Things To Do",
       id: new Date().getTime(),
+      moveTask: this.moveTask,
+      profDelList: this.profDelList
     };
 
     this.toDo.push(new todoList($todo, listData));

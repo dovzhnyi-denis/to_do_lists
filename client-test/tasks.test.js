@@ -1,82 +1,123 @@
+import Profile from "../src/components/profile";
 import List from "../src/components/todoList";
 const expect = chai.expect;
 
 export default function tasksTest() {
   describe("tasks", () => {
-    const $container = $("#root"),
+    const $profCont = $("#root");
+    const profile = new Profile($profCont);
+
+
+    const $container = $("#todoContainer"),
       listData = {
         name: "testList",
         id: 12345
       };
-    const { id, name } = listData,
-      taskName1 = "task1",
-      taskName2 = "task2";
+    const list1Id = listData.id,
+      task1Name = "task1",
+      task2Name = "task2";
 
     let todoList;
 
     beforeEach(() => {
-      todoList = new List($container, listData);
-      todoList.mount();
+      profile.mount(null, [listData]);
     });
 
     afterEach(() => {
-      todoList.unmount();
+      profile.toDo.forEach(td => td.unmount());
+      profile.unmount();
     });
  
-    it("hovering mouse over task line should make task icons visible (priority arrows, pen, trash bin)", () => {
-      $(`#iNewTask${id}`).val(taskName1);
-      $(`#addTask${id}`).trigger("click");
+    it("hovering mouse over task line should make task buttons visible (priority arrows, pen, trash bin)", () => {
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
 
-      $(`#iNewTask${id}`).val(taskName2);
-      $(`#addTask${id}`).trigger("click");
+      const taskId = profile.toDo[0].tasks[0].data.id;
+      const $taskBtns = $(`#taskBtns${taskId}`).find("svg");
 
-      const task1Id = todoList.tasks[0].data.id;
+      $(`#task${taskId}`).trigger("mouseover");
 
-      $(`#prioDec${task1Id}`).trigger("click");
-
-      expect(todoList.tasks[1].data.id).to.equal(task1Id);
+      for (let btn of $taskBtns) {
+        expect(btn.style.display).to.not.equal("none");
+      };
     });
 
     it("clicking arrow up should move task position up in the task list", () => {
-      $(`#iNewTask${id}`).val(taskName1);
-      $(`#addTask${id}`).trigger("click");
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
 
-      $(`#iNewTask${id}`).val(taskName2);
-      $(`#addTask${id}`).trigger("click");
+      $(`#iNewTask${list1Id}`).val(task2Name);
+      $(`#addTask${list1Id}`).trigger("click");
 
-      const task2Id = todoList.tasks[1].data.id;
+      const task2Id = profile.toDo[0].tasks[1].data.id;
 
       $(`#prioInc${task2Id}`).trigger("click");
 
-      expect(todoList.tasks[0].data.id).to.equal(task2Id);
+      expect(profile.toDo[0].tasks[0].data.id).to.equal(task2Id);
     });
 
     it("clicking arrow down should move task position down in the task list", () => {
-      $(`#iNewTask${id}`).val(taskName1);
-      $(`#addTask${id}`).trigger("click");
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
 
-      $(`#iNewTask${id}`).val(taskName2);
-      $(`#addTask${id}`).trigger("click");
+      $(`#iNewTask${list1Id}`).val(task2Name);
+      $(`#addTask${list1Id}`).trigger("click");
 
-      const task1Id = todoList.tasks[0].data.id;
+      const task1Id = profile.toDo[0].tasks[0].data.id;
 
       $(`#prioDec${task1Id}`).trigger("click");
 
-      expect(todoList.tasks[1].data.id).to.equal(task1Id);
+      expect(profile.toDo[0].tasks[1].data.id).to.equal(task1Id);
     });
 
-//    it("clicking arrow down should move task position down in the task list", () => {
-//      $(`#iNewTask${id}`).val(taskName1);
-//      $(`#addTask${id}`).trigger("click");
-//
-//      $(`#iNewTask${id}`).val(taskName2);
-//      $(`#addTask${id}`).trigger("click");
-//
-//      const task1Id = todoList.tasks[0].data.id;
-//
-//      $(`#prioDec${task1Id}`).trigger("click");
-//
-//      expect(todoList.tasks[1].data.id).to.equal(task1Id);
-//    });
+    it("clicking on pen button should make task name editable", () => {
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
+
+      const taskId = profile.toDo[0].tasks[0].data.id;
+
+      $(`#edTaskName${taskId}`).trigger("click");
+
+      expect($(`#iTaskName${taskId}`).attr("contenteditable")).to.equal("true");
+    });
+
+    it("clicking on trash bin button should remove task", () => {
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
+
+      const taskId = profile.toDo[0].tasks[0].data.id;
+
+      $(`#delTask${taskId}`).trigger("click");
+
+      expect($(`#task${taskId}`).length).to.equal(0);
+      expect(profile.toDo[0].tasks.length).to.equal(0);
+    });
+
+    it("clicking on status icon should toggle status", () => {
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
+
+      const taskId = profile.toDo[0].tasks[0].data.id;
+
+      $(`#status${taskId}`).trigger("click");
+
+      expect(profile.toDo[0].tasks[0].data.status).to.equal(1);
+    });
+
+    it("tasks can be moved between lists", () => {
+      $("#addList").trigger("click");
+
+      const list2Id = profile.toDo[1].data.id;
+
+      $(`#iNewTask${list1Id}`).val(task1Name);
+      $(`#addTask${list1Id}`).trigger("click");
+
+      const taskId = profile.toDo[0].tasks[0].data.id;
+      $(`#changeList${taskId}`).css("display", "none");
+
+      $(`#changeListBtn${taskId}`).trigger("click");
+      $(`#moveToList${list2Id}`).trigger("click");
+      expect(profile.toDo[1].tasks[0].data.listId).to.equal(list2Id);
+    });
   });
 }
